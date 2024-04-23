@@ -1,0 +1,39 @@
+[versions]
+coroutines-run-blocking-all = "0.1.0-rc.1"
+kotlin = "1.9"
+kotest = "5.8.1"
+android-min-sdk = "24"
+android-compile-sdk = "33"
+kotlinx-coroutines = "1.7.3"
+kotlinx-datetime = "0.5.0"
+kermit = "2.0.2"
+multiplatform-settings = "1.1.1"
+build-config = "4.1.1"
+kstore = "0.7.1"
+dokka = "1.9.20"
+sonarqube = "5.0.0.4638"
+vanniktech-maven-publish = "0.28.0"
+
+[libraries]
+coroutines-run-blocking-all = { module = "com.javiersc.kotlinx:coroutines-run-blocking-all", version.ref = "coroutines-run-blocking-all" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
+kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", version.ref = "kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
+kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+
+[plugins]
+kotest-multiplatform = { id = "io.kotest.multiplatform", version.ref = "kotest" }
+build-config = { id = "com.github.gmazzo.buildconfig", version.ref = "build-config" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven-publish" }
+
+[bundles]

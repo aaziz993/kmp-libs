@@ -1,0 +1,22 @@
+variants: [ debug, release ]
+
+dependencies:
+  - $libs.kotlinx.coroutines.core
+  - $libs.multiplatform.settings
+  - $libs.kstore
+  - $libs.kotlinx.datetime
+  - $libs.kermit
+  - $libs.coroutines.run.blocking.all
+
+dependencies@android:
+  - $libs.kotlinx.coroutines.android
+
+dependencies@jvm:
+  - $libs.kotlinx.coroutines.swing
+  - $libs.kotest.runner.junit5
+
+test-dependencies:
+  - $libs.kotest.assertions.core
+  - $libs.kotest.framework.engine
+  - $libs.kotest.framework.datatest
+  - $libs.kotlinx.coroutines.test
