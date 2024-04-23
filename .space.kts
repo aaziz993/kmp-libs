@@ -35,10 +35,8 @@ job("Code analysis, clean, test, build and publish") {
             "Gradle test, build and publish to Maven Central",
             "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest"
         ) {
-
             shellScript {
                 interpreter = "/bin/bash"
-                conte
                 location = "./scripts/publish-maven.sh"
             }
         }
