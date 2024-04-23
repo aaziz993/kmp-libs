@@ -27,7 +27,9 @@ job("Code analysis, clean, test, build and publish") {
 
             shellScript {
                 interpreter = "/bin/bash"
-                location = "./scripts/publish-space.sh"
+                content = """
+                    make publish-space
+                """
             }
         }
 
@@ -37,7 +39,9 @@ job("Code analysis, clean, test, build and publish") {
         ) {
             shellScript {
                 interpreter = "/bin/bash"
-                location = "./scripts/publish-maven.sh"
+                content = """
+                    make publish-maven
+                """
             }
         }
     }
