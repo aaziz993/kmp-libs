@@ -19,15 +19,28 @@ job("Code analysis, clean, test, build and publish") {
         }
     }
 
+    parallel {
+        container(
+            "Gradle test, build and publish to Space Packages",
+            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest"
+        ) {
 
-    container(
-        "Gradle test, build and publish to Space Packages and Maven Central registry",
-        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest"
-    ) {
+            shellScript {
+                interpreter = "/bin/bash"
+                location = "./scripts/publish-space.sh"
+            }
+        }
 
-        shellScript {
-            interpreter = "/bin/bash"
-            location = "./scripts/gen-gpg-key.sh"
+        container(
+            "Gradle test, build and publish to Maven Central",
+            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest"
+        ) {
+
+            shellScript {
+                interpreter = "/bin/bash"
+                conte
+                location = "./scripts/publish-maven.sh"
+            }
         }
     }
 }
