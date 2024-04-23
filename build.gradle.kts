@@ -27,9 +27,11 @@ val androidJavaTargetCompatibility =
 val githubUser: String = providers.gradleProperty("github.user").get()
 
 val localProperties = project.rootProject.file("local.properties")
-    .takeIf { it.exists() }?.reader().let {
+    .let { file ->
         Properties().apply {
-            load(it)
+            if (file.exists()) {
+                load(file.reader())
+            }
         }
     }
 
