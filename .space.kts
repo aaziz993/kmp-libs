@@ -28,6 +28,7 @@ job("Code analysis, clean, test, build and publish") {
             shellScript {
                 interpreter = "/bin/bash"
                 content = """
+                    chmod 777 -R scripts/
                     make publish-space
                 """
             }
@@ -40,6 +41,7 @@ job("Code analysis, clean, test, build and publish") {
             shellScript {
                 interpreter = "/bin/bash"
                 content = """
+                    chmod 777 -R scripts/
                     make publish-maven
                 """
             }
