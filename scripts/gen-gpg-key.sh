@@ -53,8 +53,5 @@ ORG_GRADLE_PROJECT_signingInMemoryKeyPassword="${properties["signing.gnupg.passp
 
 export ORG_GRADLE_PROJECT_mavenCentralUsername
 export ORG_GRADLE_PROJECT_mavenCentralPassword
-ORG_GRADLE_PROJECT_mavenCentralUsername="${SONATYPE_USER:=${properties["sonatype.username"]}}"
+ORG_GRADLE_PROJECT_mavenCentralUsername="${SONATYPE_USERNAME:=${properties["sonatype.username"]}}"
 ORG_GRADLE_PROJECT_mavenCentralPassword="${SONATYPE_PASSWORD:=${properties["sonatype.password"]}}"
-
-echo SONATYPE USER "$SONATYPE_USER"
-echo SONATYPE PASSWORD "$SONATYPE_PASSWORD"
