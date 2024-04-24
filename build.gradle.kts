@@ -39,8 +39,6 @@ fun String.toJavaVersion() = JavaVersion.valueOf(
     }",
 )
 
-val androidJavaTargetCompatibility = providers.gradleProperty("android.java.target.compatibility").get()
-
 val githubUser: String = providers.gradleProperty("github.user").get()
 
 val localProperties = project.rootProject.file("local.properties").let { file ->
@@ -70,21 +68,23 @@ kotlin {
         publishLibraryVariants("release")
         compilations.all {
             kotlinOptions {
-                jvmTarget = androidJavaTargetCompatibility
+                jvmTarget = providers.gradleProperty("android.compilations.kotlin.options.jvm.target").get()
             }
         }
     }
 }
 
 android {
-    namespace = providers.gradleProperty("project.group").get()
-    compileSdk = libs.versions.android.compile.sdk.get().toInt()
+    namespace = group.toString()
+    compileSdk = providers.gradleProperty("android.compile.sdk").get().toInt()
     defaultConfig {
-        minSdk = libs.versions.android.min.sdk.get().toInt()
+        minSdk = providers.gradleProperty("android.default.config.min.sdk").get().toInt()
     }
     compileOptions {
-        sourceCompatibility = providers.gradleProperty("android.java.source.compatibility").get().toJavaVersion()
-        targetCompatibility = androidJavaTargetCompatibility.toJavaVersion()
+        sourceCompatibility =
+            providers.gradleProperty("android.compile.options.source.compatibility").get().toJavaVersion()
+        targetCompatibility =
+            providers.gradleProperty("android.compile.options.target.compatibility").get().toJavaVersion()
     }
 }
 
@@ -101,7 +101,7 @@ spotless {
         googleJavaFormat().aosp() // Use Android Open Source Project style
         removeUnusedImports() // Automatically remove unused imports
         trimTrailingWhitespace() // Remove trailing whitespace
-        licenseHeaderFile(rootProject.file("$rootDir/spotless/copyright.java"))
+        licenseHeaderFile(providers.gradleProperty("spotless.java.license.header.file"))
     }
 
     // Configuration for Kotlin files
@@ -110,11 +110,11 @@ spotless {
         // Exclude files in the build directory
         targetExclude("${layout.buildDirectory}/**/*.kt", "spotless/copyright.kt")
         // Use ktlint with version 1.2.1 and custom .editorconfig
-        ktlint("1.2.1").setEditorConfigPath(rootProject.file(".editorconfig").path)
+        ktlint("1.2.1").setEditorConfigPath(providers.gradleProperty("spotless.editor.config.file"))
         // Allow toggling Spotless off and on within code files using comments
         toggleOffOn()
         trimTrailingWhitespace()
-        licenseHeaderFile(rootProject.file("$rootDir/spotless/copyright.kt"))
+        licenseHeaderFile(providers.gradleProperty("spotless.kotlin.license.header.file"))
     }
 
     format("kts") {
@@ -122,7 +122,7 @@ spotless {
         // Exclude files in the build directory
         targetExclude("${layout.buildDirectory}/**/*.kts", "spotless/copyright.kts")
         // Look for the first line that doesn't have a block comment (assumed to be the license)
-        licenseHeaderFile(rootProject.file("spotless/copyright.kts"), "(^(?![\\/ ]\\*).*$)")
+        licenseHeaderFile(providers.gradleProperty("spotless.kts.license.header.file"), "(^(?![\\/ ]\\*).*$)")
     }
 
     format("xml") {
@@ -130,7 +130,7 @@ spotless {
         // Exclude files in the build directory
         targetExclude("${layout.buildDirectory}/**/*.xml", "spotless/copyright.xml")
         // Look for the first XML tag that isn't a comment (<!--) or the xml declaration (<?xml)
-        licenseHeaderFile(rootProject.file("spotless/copyright.xml"), "(<[^!?])")
+        licenseHeaderFile(providers.gradleProperty("spotless.xml.license.header.file"), "(<[^!?])")
     }
 
     // Additional configuration for Kotlin Gradle scripts
@@ -169,6 +169,7 @@ sonarqube {
             "sonar.projectKey",
             "${providers.gradleProperty("sonar.organization").get()}_${project.name}",
         )
+        property("sonar.androidLint.reportPaths", providers.gradleProperty("sonar.android.lint.report.paths").get())
     }
 }
 

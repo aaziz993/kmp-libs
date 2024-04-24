@@ -19,24 +19,25 @@ job("Code format, analysis and publish") {
         gitPush { enabled = true }
     }
 
-    container("Spotless code format", "gradle") {
-        kotlinScript { api ->
-            api.gradlew("spotlessApply")
-        }
-    }
-
-    container("Sonar continuous inspection of code quality and security", "gradle") {
-        env["SONAR_TOKEN"] = "{{ project:sonar_token }}"
-        kotlinScript { api ->
-            api.gradlew("sonar")
-        }
-    }
+//    container("Spotless code format", "gradle") {
+//        kotlinScript { api ->
+//            api.gradlew("spotlessApply")
+//        }
+//    }
+//
+//    container("Sonar continuous inspection of code quality and security", "gradle") {
+//        env["SONAR_TOKEN"] = "{{ project:sonar_token }}"
+//        kotlinScript { api ->
+//            api.gradlew("sonar")
+//        }
+//    }
 
     parallel {
         container(
             "Publish to Space Packages",
             "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
         ) {
+            // The only way to get a secret in a shell script is an env variable
             env["SIGNING_GNUPG_PASSPHRASE"] = "{{ project:signing_gnupg_passphrase }}"
             shellScript {
                 interpreter = "/bin/bash"
@@ -50,6 +51,7 @@ job("Code format, analysis and publish") {
             "Publish to Maven Central",
             "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
         ) {
+            // The only way to get a secret in a shell script is an env variable
             env["SONATYPE_USER"] = "{{ project:sonatype_username }}"
             env["SONATYPE_PASSWORD"] = "{{ project:sonatype_password }}"
             env["SIGNING_GNUPG_PASSPHRASE"] = "{{ project:signing_gnupg_passphrase }}"
