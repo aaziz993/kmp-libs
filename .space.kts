@@ -21,7 +21,7 @@ job("Code format, analysis and publish") {
 
     container("Spotless code format", "gradle") {
         kotlinScript { api ->
-            api.gradlew("spotlessApply")
+            api.gradlew("spotlessCheck")
         }
     }
 
