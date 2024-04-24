@@ -26,7 +26,7 @@ job("Code format, analysis and publish") {
 //    }
 //
 //    container("Sonar continuous inspection of code quality and security", "gradle") {
-//        env["SONAR_TOKEN"] = "{{ project:sonar_token }}"
+//        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
 //        kotlinScript { api ->
 //            api.gradlew("sonar")
 //        }
@@ -38,7 +38,7 @@ job("Code format, analysis and publish") {
             "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
         ) {
             // The only way to get a secret in a shell script is an env variable
-            env["SIGNING_GNUPG_PASSPHRASE"] = "{{ project:signing_gnupg_passphrase }}"
+            env["SIGNING_GNUPG_PASSPHRASE"] = "{{ project:signing.gnupg.passphrase }}"
             shellScript {
                 interpreter = "/bin/bash"
                 content = """
@@ -52,9 +52,9 @@ job("Code format, analysis and publish") {
             "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
         ) {
             // The only way to get a secret in a shell script is an env variable
-            env["SONATYPE_USER"] = "{{ project:sonatype_username }}"
-            env["SONATYPE_PASSWORD"] = "{{ project:sonatype_password }}"
-            env["SIGNING_GNUPG_PASSPHRASE"] = "{{ project:signing_gnupg_passphrase }}"
+            env["SONATYPE_USERNAME"] = "{{ project:sonatype.username }}"
+            env["SONATYPE_PASSWORD"] = "{{ project:sonatype.password }}"
+            env["SIGNING_GNUPG_PASSPHRASE"] = "{{ project:signing.gnupg.passphrase }}"
             shellScript {
                 interpreter = "/bin/bash"
                 content = """
