@@ -47,7 +47,6 @@ job("Code format, analysis and publish") {
 //            shellScript {
 //                interpreter = "/bin/bash"
 //                content = """
-//                    chmod 777 -R scripts/
 //                    make publish-space
 //                """
 //            }
@@ -57,6 +56,7 @@ job("Code format, analysis and publish") {
         "Gradle test, build and publish to Maven Central",
         "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
     ) {
+        env["SONATYPE_PASSWORD"] = "{{ project:SONATYPE_PASSWORD }}"
         shellScript {
             interpreter = "/bin/bash"
             content = """

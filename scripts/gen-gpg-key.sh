@@ -56,5 +56,5 @@ export ORG_GRADLE_PROJECT_mavenCentralPassword
 ORG_GRADLE_PROJECT_mavenCentralUsername="${SONATYPE_USER:=${properties["sonatype.username"]}}"
 ORG_GRADLE_PROJECT_mavenCentralPassword="${SONATYPE_PASSWORD:=${properties["sonatype.password"]}}"
 
-echo PROPERTIES
-for x in "${!properties[@]}"; do printf "[%s]=%s\n" "$x" "${properties[$x]}" ; done
+echo SONATYPE USER "$SONATYPE_USER"
+echo SONATYPE PASSWORD "$SONATYPE_PASSWORD"
