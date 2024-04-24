@@ -53,17 +53,16 @@ job("Code format, analysis and publish") {
 //            }
 //        }
 
-        container(
-            "Gradle test, build and publish to Maven Central",
-            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
-        ) {
-            shellScript {
-                interpreter = "/bin/bash"
-                content = """
-                    chmod 777 -R scripts/
+    container(
+        "Gradle test, build and publish to Maven Central",
+        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+    ) {
+        shellScript {
+            interpreter = "/bin/bash"
+            content = """
                     make publish-maven
                 """
-            }
         }
+    }
 //    }
 }
