@@ -157,6 +157,10 @@ val javadocJar = tasks.create<Jar>("javadocJar") {
 }
 
 // Project code analysis
+// To analyze a project hierarchy, apply the SonarQube plugin to the root project of the hierarchy.
+// Typically (but not necessarily) this will be the root project of the Gradle build.
+// Information pertaining to the analysis as a whole has to be configured in the sonar block of this project.
+// Any properties set on the command line also apply to this project.
 sonarqube {
     properties {
         property("sonar.host.url", providers.gradleProperty("sonar.host.url").get())
