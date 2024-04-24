@@ -168,6 +168,13 @@ spotless {
         licenseHeaderFile(providers.gradleProperty("spotless.kts.license.header.file"), "(^(?![\\/ ]\\*).*$)")
     }
 
+    format("misc") {
+        target("**/*.gradle", "**/*.md", "**/.gitignore")
+        indentWithSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
     format("xml") {
         target("**/*.xml")
         // Exclude files in the build directory
