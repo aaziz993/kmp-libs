@@ -38,7 +38,7 @@ job("Code format, analysis and publish") {
 //        }
 //    }
 
-    parallel {
+//    parallel {
 //        container(
 //            "Gradle test, build and publish to Space Packages",
 //            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
@@ -65,5 +65,5 @@ job("Code format, analysis and publish") {
                 """
             }
         }
-    }
+//    }
 }
