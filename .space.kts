@@ -58,7 +58,7 @@ job("Code format, analysis and publish") {
         "Gradle test, build and publish to Maven Central",
         "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
     ) {
-        env["SONATYPE_USER"] = "{{ project:sonatype_user }}"
+        env["SONATYPE_USER"] = "{{ project:sonatype_username }}"
         env["SONATYPE_PASSWORD"] = "{{ project:sonatype_password }}"
         env["SIGNING_GNUPG_PASSPHRASE"] = "{{ project:signing_gnupg_passphrase }}"
         shellScript {
