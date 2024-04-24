@@ -26,6 +26,9 @@ readPropertyFile () {
 readPropertyFile "./gradle.properties"
 readPropertyFile "./local.properties"
 
+export ORG_GRADLE_PROJECT_signingInMemoryKeyPassword
+ORG_GRADLE_PROJECT_signingInMemoryKeyPassword="${SIGNING_GNUPG_PASSPHRASE:=${properties["signing.gnupg.passphrase"]}}"
+
 # SIGNING
 if [[ -n $(gpg --list-keys) ]]; then
   echo "Gpg key already exists"
@@ -39,17 +42,15 @@ Name-Real:${properties["signing.gnupg.name.real"]}
 Name-Comment:${properties["signing.gnupg.name.comment"]}
 Name-Email:${properties["signing.gnupg.name.email"]}
 Expire-Date:${properties["signing.gnupg.expire.date"]}
-Passphrase:${SIGNING_GNUPG_PASSPHRASE:=${properties["signing.gnupg.passphrase"]}}
+Passphrase:$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword
 %commit
 %echo done
 EOF
 fi
 export ORG_GRADLE_PROJECT_signingInMemoryKeyId
 export ORG_GRADLE_PROJECT_signingInMemoryKey
-export ORG_GRADLE_PROJECT_signingInMemoryKeyPassword
 ORG_GRADLE_PROJECT_signingInMemoryKeyId="$(gpg --list-keys --keyid-format short "${properties["signing.gnupg.name.real"]}" | awk '$1 == "pub" { print $2 }' | cut -d'/' -f2)"
-ORG_GRADLE_PROJECT_signingInMemoryKey="$(gpg --pinentry-mode=loopback --passphrase="${properties["signing.gnupg.passphrase"]}" --export-secret-keys --armor "${properties["signing.gnupg.name.real"]}" | grep -v '\-\-' | grep -v '^=.' | tr -d '\n')"
-ORG_GRADLE_PROJECT_signingInMemoryKeyPassword="${properties["signing.gnupg.passphrase"]}"
+ORG_GRADLE_PROJECT_signingInMemoryKey="$(gpg --pinentry-mode=loopback --passphrase="$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword" --export-secret-keys --armor "${properties["signing.gnupg.name.real"]}" | grep -v '\-\-' | grep -v '^=.' | tr -d '\n')"
 
 export ORG_GRADLE_PROJECT_mavenCentralUsername
 export ORG_GRADLE_PROJECT_mavenCentralPassword
