@@ -19,13 +19,19 @@ job("Code format check, analysis and publish") {
         gitPush { enabled = true }
     }
 
-    container("Spotless code format check", "gradle") {
+    container(
+        "Spotless code format check",
+        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+    ) {
         kotlinScript { api ->
             api.gradlew("spotlessCheck", "--no-configuration-cache")
         }
     }
 
-    container("Sonar continuous inspection of code quality and security", "gradle") {
+    container(
+        "Sonar continuous inspection of code quality and security",
+        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+    ) {
         env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
         kotlinScript { api ->
             api.gradlew("sonar", "--no-configuration-cache")
