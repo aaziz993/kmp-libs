@@ -270,7 +270,7 @@ publishing {
             // environment variables
             credentials {
                 username = if (System.getenv().containsKey("GITHUB_ACTOR")) {
-                    System.getenv("GITHUB_ACTOR")
+                    System.getenv("GITHUB_USERNAME")
                 } else {
                     githubUsername
                 }
@@ -285,13 +285,13 @@ publishing {
 }
 
 mavenPublishing {
-    coordinates(group.toString(), name, version.toString())
+    coordinates(group.toString(), rootProject.name, version.toString())
 
     pom {
-        name.set(name.toString().uppercaseFirstChar())
+        name.set(rootProject.name.uppercaseFirstChar())
         description.set(providers.gradleProperty("project.description"))
         inceptionYear.set("2020")
-        url.set("https://github.com/$githubUsername/$name")
+        url.set("https://github.com/$githubUsername/${rootProject.name}")
 
         licenses {
             license {
@@ -302,7 +302,7 @@ mavenPublishing {
 
         issueManagement {
             system.set("GitHub Issues")
-            url.set("https://github.com/$githubUsername/$name/issues") // Change here
+            url.set("https://github.com/$githubUsername/${rootProject.name}/issues") // Change here
         }
 
         developers {
@@ -320,9 +320,9 @@ mavenPublishing {
         }
 
         scm {
-            connection.set("scm:git:git://github.com:$githubUsername/$name.git")
-            url.set("https://github.com/$githubUsername/$name")
-            developerConnection.set("scm:git:ssh://github.com:$githubUsername/$name.git")
+            connection.set("scm:git:git://github.com:$githubUsername/${rootProject.name}.git")
+            url.set("https://github.com/$githubUsername/${rootProject.name}")
+            developerConnection.set("scm:git:ssh://github.com:$githubUsername/${rootProject.name}.git")
         }
     }
 
