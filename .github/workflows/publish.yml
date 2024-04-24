@@ -31,7 +31,7 @@ jobs:
           java-version: 17
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2.0.10
+        uses: android-actions/setup-android@v3
 
       - name: Spotless code format
         run: ./gradlew spotlessApply
