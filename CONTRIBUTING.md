@@ -7,16 +7,16 @@ Want to show KMP some love? Help out by contributing!
 Log it in GitHub issues:
 
 * https://github.com/aaziz993/kmp/issues
-* or send a note to the [user mailing list](https://jmeter.apache.org/mail2.html#JMeterUser).
+* or send a note to the [a.atoev93@gmail.com](https://gmail.com).
 
 Be sure to include all relevant information, like the versions of KMP you’re using as long as Java version.
-A Test plan  that caused the issue as well as any error messages are also very helpful.
+A Test plan that caused the issue as well as any error messages are also very helpful.
 
 ## :question: Need help
 
 Contact:
 
-* [Our users mailing list](https://jmeter.apache.org/mail2.html#JMeterUser)
+* My email: [a.atoev93@gmail.com](https://gmail.com)
 * or ask question on [stackoverflow](https://stackoverflow.com/questions/tagged/kmp).
 
 ## :bar_chart: What needs to be developed
@@ -82,7 +82,7 @@ However, before sending a patch, please make sure that the following applies:
 We do love to enhance KMP with you to become more powerful!
 The best way to work out your idea is to discuss it first at our dev mailing list:
 
-* [KMP developers mailing list](https://jmeter.apache.org/mail2.html#JMeterDev)
+* My email: [a.atoev93@gmail.com](https://gmail.com)
 
 Please, if you can, don't just throw us the code of a new feature; lets figure first together
 what would be the best approach regarding the current architecture and future plans,

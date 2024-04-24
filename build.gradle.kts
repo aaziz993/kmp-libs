@@ -1,7 +1,22 @@
+/*
+ * Copyright 2024 Aziz Atoev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 import java.util.*
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+// Top-level build file where you can add configuration options common to all subprojects/modules.
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     kotlin("multiplatform")
@@ -24,78 +39,31 @@ fun String.toJavaVersion() = JavaVersion.valueOf(
     }",
 )
 
-val androidJavaTargetCompatibility =
-    providers.gradleProperty("android.java.target.compatibility").get()
+val androidJavaTargetCompatibility = providers.gradleProperty("android.java.target.compatibility").get()
 
 val githubUser: String = providers.gradleProperty("github.user").get()
 
-val localProperties = project.rootProject.file("local.properties")
-    .let { file ->
-        Properties().apply {
-            if (file.exists()) {
-                load(file.reader())
-            }
-        }
-    }
-
-allprojects {
-    apply {
-        plugin(rootProject.libs.plugins.spotless.get().pluginId)
-    }
-
-    group = providers.gradleProperty("project.group").get()
-
-    val versionSplit = providers.gradleProperty("project.version").get().split("-", limit = 2)
-    version = "${versionSplit[0]}${
-        if (providers.gradleProperty("jetbrains.space.automation.versioning").get()
-                .toBoolean() &&
-            System.getenv().containsKey("JB_SPACE_EXECUTION_NUMBER")
-        ) {
-            ".${System.getenv("JB_SPACE_EXECUTION_NUMBER")}"
-        } else {
-            ""
-        }
-    }${if (versionSplit.size > 1) "-${versionSplit[1]}" else ""}"
-
-    spotless {
-        // Configuration for Java files
-        java {
-            target("**/*.java")
-            googleJavaFormat().aosp() // Use Android Open Source Project style
-            removeUnusedImports() // Automatically remove unused imports
-            trimTrailingWhitespace() // Remove trailing whitespace
-        }
-
-        // Configuration for Kotlin files
-        kotlin {
-            target("**/*.kt")
-            targetExclude("${layout.buildDirectory}/**/*.kt") // Exclude files in the build directory
-            ktlint("1.2.1").setEditorConfigPath(rootProject.file(".editorconfig").path) // Use ktlint with version 1.2.1 and custom .editorconfig
-            toggleOffOn() // Allow toggling Spotless off and on within code files using comments
-            trimTrailingWhitespace()
-            licenseHeaderFile(rootProject.file("$rootDir/spotless/copyright.kt"))
-        }
-
-        format("kts") {
-            target("**/*.kts")
-            targetExclude("${layout.buildDirectory}/**/*.kts") // Exclude files in the build directory
-            // Look for the first line that doesn't have a block comment (assumed to be the license)
-            licenseHeaderFile(rootProject.file("spotless/copyright.kts"), "(^(?![\\/ ]\\*).*$)")
-        }
-        format("xml") {
-            target("**/*.xml")
-            targetExclude("${layout.buildDirectory}/**/*.xml") // Exclude files in the build directory
-            // Look for the first XML tag that isn't a comment (<!--) or the xml declaration (<?xml)
-            licenseHeaderFile(rootProject.file("spotless/copyright.xml"), "(<[^!?])")
-        }
-
-        // Additional configuration for Kotlin Gradle scripts
-        kotlinGradle {
-            target("*.gradle.kts")
-            ktlint("1.2.1") // Apply ktlint to Gradle Kotlin scripts
+val localProperties = project.rootProject.file("local.properties").let { file ->
+    Properties().apply {
+        if (file.exists()) {
+            load(file.reader())
         }
     }
 }
+
+group = providers.gradleProperty("project.group").get()
+
+val versionSplit = providers.gradleProperty("project.version").get().split("-", limit = 2)
+version = "${versionSplit[0]}${
+    if (providers.gradleProperty("jetbrains.space.automation.versioning").get().toBoolean() &&
+        System.getenv()
+            .containsKey("JB_SPACE_EXECUTION_NUMBER")
+    ) {
+        ".${System.getenv("JB_SPACE_EXECUTION_NUMBER")}"
+    } else {
+        ""
+    }
+}${if (versionSplit.size > 1) "-${versionSplit[1]}" else ""}"
 
 kotlin {
     androidTarget {
@@ -115,8 +83,7 @@ android {
         minSdk = libs.versions.android.min.sdk.get().toInt()
     }
     compileOptions {
-        sourceCompatibility =
-            providers.gradleProperty("android.java.source.compatibility").get().toJavaVersion()
+        sourceCompatibility = providers.gradleProperty("android.java.source.compatibility").get().toJavaVersion()
         targetCompatibility = androidJavaTargetCompatibility.toJavaVersion()
     }
 }
@@ -124,6 +91,54 @@ android {
 buildConfig {
     // BuildConfig configuration here.
     // https://github.com/gmazzo/gradle-buildconfig-plugin#usage-in-kts
+}
+
+spotless {
+    // Configuration for Java files
+    java {
+        target("**/*.java")
+        targetExclude("spotless/copyright.java")
+        googleJavaFormat().aosp() // Use Android Open Source Project style
+        removeUnusedImports() // Automatically remove unused imports
+        trimTrailingWhitespace() // Remove trailing whitespace
+        licenseHeaderFile(rootProject.file("$rootDir/spotless/copyright.java"))
+    }
+
+    // Configuration for Kotlin files
+    kotlin {
+        target("**/*.kt")
+        // Exclude files in the build directory
+        targetExclude("${layout.buildDirectory}/**/*.kt", "spotless/copyright.kt")
+        // Use ktlint with version 1.2.1 and custom .editorconfig
+        ktlint("1.2.1").setEditorConfigPath(rootProject.file(".editorconfig").path)
+        // Allow toggling Spotless off and on within code files using comments
+        toggleOffOn()
+        trimTrailingWhitespace()
+        licenseHeaderFile(rootProject.file("$rootDir/spotless/copyright.kt"))
+    }
+
+    format("kts") {
+        target("**/*.kts")
+        // Exclude files in the build directory
+        targetExclude("${layout.buildDirectory}/**/*.kts", "spotless/copyright.kts")
+        // Look for the first line that doesn't have a block comment (assumed to be the license)
+        licenseHeaderFile(rootProject.file("spotless/copyright.kts"), "(^(?![\\/ ]\\*).*$)")
+    }
+
+    format("xml") {
+        target("**/*.xml")
+        // Exclude files in the build directory
+        targetExclude("${layout.buildDirectory}/**/*.xml", "spotless/copyright.xml")
+        // Look for the first XML tag that isn't a comment (<!--) or the xml declaration (<?xml)
+        licenseHeaderFile(rootProject.file("spotless/copyright.xml"), "(<[^!?])")
+    }
+
+    // Additional configuration for Kotlin Gradle scripts
+    kotlinGradle {
+        target("*.gradle.kts")
+        // Apply ktlint to Gradle Kotlin scripts
+        ktlint("1.2.1")
+    }
 }
 
 // Project documentation
@@ -158,9 +173,7 @@ publishing {
         maven {
             name = "spacePackages"
             url = uri(
-                if (version.toString()
-                        .endsWith("SNAPSHOT")
-                ) {
+                if (version.toString().endsWith("SNAPSHOT")) {
                     providers.gradleProperty("jetbrains.space.packages.snapshots.url")
                 } else {
                     providers.gradleProperty("jetbrains.space.packages.releases.url")
@@ -168,16 +181,12 @@ publishing {
             )
             // environment variables
             credentials {
-                username = if (System.getenv()
-                        .containsKey("JB_SPACE_CLIENT_ID")
-                ) {
+                username = if (System.getenv().containsKey("JB_SPACE_CLIENT_ID")) {
                     System.getenv("JB_SPACE_CLIENT_ID")
                 } else {
                     localProperties.getProperty("jetbrains.space.client.id")
                 }
-                password = if (System.getenv()
-                        .containsKey("JB_SPACE_CLIENT_SECRET")
-                ) {
+                password = if (System.getenv().containsKey("JB_SPACE_CLIENT_SECRET")) {
                     System.getenv("JB_SPACE_CLIENT_SECRET")
                 } else {
                     localProperties.getProperty("jetbrains.space.client.secret")
@@ -191,9 +200,7 @@ publishing {
             // environment variables
             credentials {
                 username = githubUser
-                password = if (System.getenv()
-                        .containsKey("GITHUB_PASSWORD")
-                ) {
+                password = if (System.getenv().containsKey("GITHUB_PASSWORD")) {
                     System.getenv("GITHUB_PASSWORD")
                 } else {
                     localProperties.getProperty("github.password")

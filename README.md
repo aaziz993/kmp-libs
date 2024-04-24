@@ -1,10 +1,10 @@
 [![official project](http://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 
-# Kotlin Multiplatform
+# Kotlin Multiplatform Project
 
 ## What is it?
 
-It is the barebones library project intended to quickly bootstrap a Kotlin Multiplatform library, that is deployable to Space Packages,Github Packages and Maven Central.
+It is the barebones library project intended to quickly bootstrap a Kotlin Multiplatform project, that is deployable to Space Packages,Github Packages and Maven Central.
 
 ## How do I publish it?
 1. - Install ```make```
