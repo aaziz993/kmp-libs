@@ -19,18 +19,18 @@ job("Code format, analysis and publish") {
         gitPush { enabled = true }
     }
 
-//    container("Spotless code format", "gradle") {
-//        kotlinScript { api ->
-//            api.gradlew("spotlessApply")
-//        }
-//    }
-//
-//    container("Sonar continuous inspection of code quality and security", "gradle") {
-//        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
-//        kotlinScript { api ->
-//            api.gradlew("sonar")
-//        }
-//    }
+    container("Spotless code format", "gradle") {
+        kotlinScript { api ->
+            api.gradlew("spotlessApply")
+        }
+    }
+
+    container("Sonar continuous inspection of code quality and security", "gradle") {
+        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
+        kotlinScript { api ->
+            api.gradlew("sonar")
+        }
+    }
 
     parallel {
         container(
