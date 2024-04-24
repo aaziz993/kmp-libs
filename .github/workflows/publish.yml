@@ -37,7 +37,7 @@ jobs:
       - uses: android-actions/setup-android@v3
 
       - name: Spotless code format
-        run: ./gradlew spotlessApply
+        run: ./gradlew spotlessCheck
 
       - name: Sonar continuous inspection of code quality and security
         env:

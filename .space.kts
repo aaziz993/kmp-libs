@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-job("Code format, analysis and publish") {
+job("Code format check, analysis and publish") {
     startOn {
         gitPush { enabled = true }
     }
 
-    container("Spotless code format", "gradle") {
+    container("Spotless code format check", "gradle") {
         kotlinScript { api ->
             api.gradlew("spotlessCheck")
         }
