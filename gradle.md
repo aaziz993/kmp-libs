@@ -31,7 +31,7 @@ However, it might be useful to perform a "clean" build:
 #### Fine Grained Formatting Commands
 
 * Run checkstyle for main (non-test) code `./gradlew checkstyleMain`
-* 
+*
 * Run checkstyle for test code `./gradlew checkstyleTest`
 
 * Run Spotless checks `./gradlew spotlessCheck`

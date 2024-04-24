@@ -126,7 +126,6 @@ android {
             )
         }
         debug {
-
         }
     }
 }
@@ -137,10 +136,18 @@ buildConfig {
 }
 
 spotless {
+    val excludeSourceFileTargets = listOf(
+        "${layout.buildDirectory}/**/*",
+        "/idea/**/*",
+        "/fleet/**/*",
+        "spotless/copyright",
+        ".gradle/**/*",
+    )
+
     // Configuration for Java files
     java {
         target("**/*.java")
-        targetExclude("spotless/copyright.java")
+        targetExclude(*excludeSourceFileTargets.map { "$it.java" }.toTypedArray())
         googleJavaFormat().aosp() // Use Android Open Source Project style
         removeUnusedImports() // Automatically remove unused imports
         trimTrailingWhitespace() // Remove trailing whitespace
@@ -151,7 +158,7 @@ spotless {
     kotlin {
         target("**/*.kt")
         // Exclude files in the build directory
-        targetExclude("${layout.buildDirectory}/**/*.kt", "spotless/copyright.kt")
+        targetExclude(*excludeSourceFileTargets.map { "$it.kt" }.toTypedArray())
         // Use ktlint with version 1.2.1 and custom .editorconfig
         ktlint("1.2.1").setEditorConfigPath(providers.gradleProperty("spotless.editor.config.file"))
         // Allow toggling Spotless off and on within code files using comments
@@ -163,13 +170,13 @@ spotless {
     format("kts") {
         target("**/*.kts")
         // Exclude files in the build directory
-        targetExclude("${layout.buildDirectory}/**/*.kts", "spotless/copyright.kts")
+        targetExclude(*excludeSourceFileTargets.map { "$it.kts" }.toTypedArray())
         // Look for the first line that doesn't have a block comment (assumed to be the license)
         licenseHeaderFile(providers.gradleProperty("spotless.kts.license.header.file"), "(^(?![\\/ ]\\*).*$)")
     }
 
     format("misc") {
-        target("**/*.gradle", "**/*.md", "**/.gitignore")
+        target("**/*.md", "**/.gitignore")
         indentWithSpaces()
         trimTrailingWhitespace()
         endWithNewline()
@@ -178,7 +185,7 @@ spotless {
     format("xml") {
         target("**/*.xml")
         // Exclude files in the build directory
-        targetExclude("${layout.buildDirectory}/**/*.xml", "spotless/copyright.xml")
+        targetExclude(*excludeSourceFileTargets.map { "$it.xml" }.toTypedArray())
         // Look for the first XML tag that isn't a comment (<!--) or the xml declaration (<?xml)
         licenseHeaderFile(providers.gradleProperty("spotless.xml.license.header.file"), "(<[^!?])")
     }
@@ -254,8 +261,11 @@ publishing {
             url = uri("${providers.gradleProperty("github.packages.url")}/$githubUsername/${rootProject.name}")
             // environment variables
             credentials {
-                username = if (System.getenv().containsKey("GITHUB_ACTOR"))
-                    System.getenv("GITHUB_ACTOR") else githubUsername
+                username = if (System.getenv().containsKey("GITHUB_ACTOR")) {
+                    System.getenv("GITHUB_ACTOR")
+                } else {
+                    githubUsername
+                }
                 password = if (System.getenv().containsKey("GITHUB_PASSWORD")) {
                     System.getenv("GITHUB_PASSWORD")
                 } else {

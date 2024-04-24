@@ -21,14 +21,14 @@ job("Code format check, analysis and publish") {
 
     container("Spotless code format check", "gradle") {
         kotlinScript { api ->
-            api.gradlew("spotlessCheck")
+            api.gradlew("spotlessCheck", "--no-configuration-cache")
         }
     }
 
     container("Sonar continuous inspection of code quality and security", "gradle") {
         env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
         kotlinScript { api ->
-            api.gradlew("sonar")
+            api.gradlew("sonar", "--no-configuration-cache")
         }
     }
 
