@@ -86,6 +86,36 @@ android {
         targetCompatibility =
             providers.gradleProperty("android.compile.options.target.compatibility").get().toJavaVersion()
     }
+    buildTypes {
+        release {
+            // Enables code shrinking, obfuscation, and optimization for only
+            // your project's release build type. Make sure to use a build
+            // variant with `isDebuggable=false`.
+            isMinifyEnabled = true
+
+            proguardFiles(
+                // Includes the default ProGuard rules files that are packaged with
+                // the Android Gradle plugin. To learn more, go to the section about
+                // R8 configuration files.
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+
+                // List additional ProGuard rules for the given build type here. By default,
+                // Android Studio creates and includes an empty rules file for you (located
+                // at the root directory of each module).
+
+                // Includes a local, custom Proguard rules file
+                "proguard-rules.pro",
+            )
+            testProguardFiles(
+                // The proguard files listed here are included in the
+                // test APK only.
+                "test-proguard-rules.pro"
+            )
+        }
+        debug {
+
+        }
+    }
 }
 
 buildConfig {
