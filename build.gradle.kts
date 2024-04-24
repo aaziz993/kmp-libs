@@ -39,7 +39,7 @@ fun String.toJavaVersion() = JavaVersion.valueOf(
     }",
 )
 
-val githubUser: String = providers.gradleProperty("github.user").get()
+val githubUsername: String = providers.gradleProperty("github.username").get()
 
 val localProperties = project.rootProject.file("local.properties").let { file ->
     Properties().apply {
@@ -53,6 +53,19 @@ group = providers.gradleProperty("project.group").get()
 
 val versionSplit = providers.gradleProperty("project.version").get().split("-", limit = 2)
 version = "${versionSplit[0]}${
+    if (providers.gradleProperty("github.automation.versioning").get().toBoolean() &&
+        System.getenv()
+            .containsKey("GITHUB_REF")
+    ) {
+        // The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
+        // If we split on '/' and take the 3rd value,
+        // we can get the release name.
+        ".${System.getenv("GITHUB_REF").split("/", limit = 3)[2]}"
+    } else {
+        ""
+    }
+
+}${
     if (providers.gradleProperty("jetbrains.space.automation.versioning").get().toBoolean() &&
         System.getenv()
             .containsKey("JB_SPACE_EXECUTION_NUMBER")
@@ -109,7 +122,7 @@ android {
             testProguardFiles(
                 // The proguard files listed here are included in the
                 // test APK only.
-                "test-proguard-rules.pro"
+                "test-proguard-rules.pro",
             )
         }
         debug {
@@ -231,10 +244,11 @@ publishing {
 
         maven {
             name = "githubPackages"
-            url = uri("${providers.gradleProperty("github.packages.url")}/$githubUser/${rootProject.name}")
+            url = uri("${providers.gradleProperty("github.packages.url")}/$githubUsername/${rootProject.name}")
             // environment variables
             credentials {
-                username = githubUser
+                username = if (System.getenv().containsKey("GITHUB_ACTOR"))
+                    System.getenv("GITHUB_ACTOR") else githubUsername
                 password = if (System.getenv().containsKey("GITHUB_PASSWORD")) {
                     System.getenv("GITHUB_PASSWORD")
                 } else {
@@ -252,7 +266,7 @@ mavenPublishing {
         name.set(name.toString().uppercaseFirstChar())
         description.set(providers.gradleProperty("project.description"))
         inceptionYear.set("2020")
-        url.set("https://github.com/$githubUser/$name")
+        url.set("https://github.com/$githubUsername/$name")
 
         licenses {
             license {
@@ -263,7 +277,7 @@ mavenPublishing {
 
         issueManagement {
             system.set("GitHub Issues")
-            url.set("https://github.com/$githubUser/$name/issues") // Change here
+            url.set("https://github.com/$githubUsername/$name/issues") // Change here
         }
 
         developers {
@@ -281,9 +295,9 @@ mavenPublishing {
         }
 
         scm {
-            connection.set("scm:git:git://github.com:$githubUser/$name.git")
-            url.set("https://github.com/$githubUser/$name")
-            developerConnection.set("scm:git:ssh://github.com:$githubUser/$name.git")
+            connection.set("scm:git:git://github.com:$githubUsername/$name.git")
+            url.set("https://github.com/$githubUsername/$name")
+            developerConnection.set("scm:git:ssh://github.com:$githubUsername/$name.git")
         }
     }
 
