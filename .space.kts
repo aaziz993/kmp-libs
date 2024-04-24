@@ -19,39 +19,39 @@ job("Code format, analysis and publish") {
         gitPush { enabled = true }
     }
 
-    container(
-        "Sonar continuous inspection of code quality and security",
-        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
-    ) {
-        env["SONAR_TOKEN"] = "{{ project:sonar_token }}"
-        kotlinScript { api ->
-            api.gradlew("sonar")
-        }
-    }
-
-    container(
-        "Spotless code format",
-        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
-    ) {
-        kotlinScript { api ->
-            api.gradlew("spotlessApply")
-        }
-    }
+//    container(
+//        "Sonar continuous inspection of code quality and security",
+//        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+//    ) {
+//        env["SONAR_TOKEN"] = "{{ project:sonar_token }}"
+//        kotlinScript { api ->
+//            api.gradlew("sonar")
+//        }
+//    }
+//
+//    container(
+//        "Spotless code format",
+//        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+//    ) {
+//        kotlinScript { api ->
+//            api.gradlew("spotlessApply")
+//        }
+//    }
 
     parallel {
-        container(
-            "Gradle test, build and publish to Space Packages",
-            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
-        ) {
-
-            shellScript {
-                interpreter = "/bin/bash"
-                content = """
-                    chmod 777 -R scripts/
-                    make publish-space
-                """
-            }
-        }
+//        container(
+//            "Gradle test, build and publish to Space Packages",
+//            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+//        ) {
+//
+//            shellScript {
+//                interpreter = "/bin/bash"
+//                content = """
+//                    chmod 777 -R scripts/
+//                    make publish-space
+//                """
+//            }
+//        }
 
         container(
             "Gradle test, build and publish to Maven Central",

@@ -1,160 +1,77 @@
 # Gradle Command-Line
 
-Useful commands (`gw` comes from https://github.com/dougborg/gdub, otherwise `./gradlew` can be used instead):
-
 ## Base project info
 
-      # Display all submodules
-      gw projects
+* Display all submodules `./gradlew projects`
 
-      # Different tasks for current module
-      gw tasks
+* Different tasks for current module `./gradlew tasks`
 
 ## List available build parameters
 
-      # List all build parameters
-      gw parameters
+* List all build parameters `./gradlew parameters`
 
 ## Cleaning build directories
 
 Technically `clean` should not be required, every time it is required it might be a bug.
 However, it might be useful to perform a "clean" build:
 
-      # Cleans current project (submodule)
-      gw clean
+* Cleans current project (submodule) `./gradlew clean`
 
-      # Cleans the specified project
-      gw :src:core:clean
+* Cleans the specified project `./gradlew :src:core:clean`
 
 ## Dependencies
 
-      # Displays dependencies. Gradle's "configurations" are something like different classpaths.
-      gw dependencies
+* Displays dependencies. Gradle's "configurations" are something like different classpaths. `./gradlew dependencies`
 
-      # Displays dependencies for all projects
-      gw allDependencies
+* Displays dependencies for all projects `./gradlew allDependencies`
 
-      # Analyze why the project depends on `org.ow2.asm:asm`
-      gw dependencyInsight --dependency org.ow2.asm:asm
+* Analyze why the project depends on `org.ow2.asm:asm` `./gradlew dependencyInsight --dependency org.ow2.asm:asm`
 
-      # Verify checksums of dependencies
-      # Checksum verification is done by default
-      # Expected checksums are stored in /checksum.properties file
-      # Actual checksums are stored in /build/checksum/computed.checksum.properties
-
-      # Update expected dependencies after updating a dependency version
-      gw -PupdateExpectedJars check
-
-## Static checks
-
-### Release Audit Tool
-
-      # Run RAT
-      gw rat
-
-### Code Formatting
-
-      # Run spotlessApply and checkstyleAll
-      gw style
-
-      # Run checkstlye for all
-      gw checkstyleAll
 
 #### Fine Grained Formatting Commands
 
-      # Run checkstyle for main (non-test) code
-      gw checkstyleMain
+* Run checkstyle for main (non-test) code `./gradlew checkstyleMain`
+* 
+* Run checkstyle for test code `./gradlew checkstyleTest`
 
-      # Run checkstyle for test code
-      gw checkstyleTest
+* Run Spotless checks `./gradlew spotlessCheck`
 
-      # Run Spotless checks
-      gw spotlessCheck
-
-      # Fix any issues found by Spotless
-      gw spotlessApply
-
-## Compiling Code
-
-      gw compileJava
-      gw compileTestJava
-      ...
+* Fix any issues found by Spotless `./gradlew spotlessApply`
 
 ## Build Project
 
-      # Just build jar (see build/libs/*.jar)
-      gw jar
+* Just build jar (see build/libs/*.jar) `./gradlew jar`
 
-      # "build" is a default task to "execute all the actions"
-      gw build
+* "build" is a default task to "execute all the actions" `./gradlew build`
 
-      # Test might be skipped by `-x test` (Gradle's default way to skip task by name)
-      gw -x test build
+* Test might be skipped by `-x test` (Gradle's default way to skip task by name) `./gradlew -x test build`
 
-      # Build project in parallel
-      gw build --parallel
+* Build project in parallel `./gradlew build --parallel`
 
 ## Tests
 
-Gradle automatically tracks task dependencies, so if you modify a file in `/src/jorphan/*`,
-then you can invoke `gw check` at project level or in `core`, and Gradle will automatically
+Gradle automatically tracks task dependencies, so if you modify a file in `/src/*/*`,
+then you can invoke `./gradlew check` at project level or in `core`, and Gradle will automatically
 build only the required jars and files.
 
-      # Runs all the tests (unit tests, checkstyle, etc)
-      gw check
+* Runs all the tests (unit tests, checkstyle, etc) `./gradlew check`
 
-      # Runs just unit tests
-      gw test
+* Runs just unit tests `./gradlew test`
 
-      # Runs just core tests
-      gw :src:core:test
+* Runs just core tests `./gradlew :src:core:test`
 
 ## Coverage
 
-      # Generates code coverage report for the test task to build/reports/jacoco/test/html
-      gw jacocoTestReport -Pcoverage
+* Generates code coverage report for the test task to build/reports/jacoco/test/html `./gradlew jacocoTestReport -Pcoverage`
 
-      # Generate combined coverage report
-      gw jacocoReport -Pcoverage
+* Generate combined coverage report `./gradlew jacocoReport -Pcoverage`
 
 ## Generate Javadocs
 
-      # Builds javadoc to build/docs/javadoc subfolder
-      gw javadoc
+* Builds javadoc to build/docs/javadoc subfolder `./gradlew javadoc`
 
-      # Builds javadoc jar to build/libs/jorphan-javadoc.jar
-      gw javadocJar
-
-## Site
-
-      # Creates preview of a site to src/dist/build/site
-      gw :src:dist:previewSite
-
-      # Builds and publishes site preview to a Git repository
-      gw :src:dist:pushPreviewSite
-
-## Maven
-
-      # publishes Maven artifact to local repository
-      gw publishToMavenLocal
-
-      # Generate all pom files (pom-default.xml)
-      # The files are placed under the individual src/**/build/publications folders
-      gw generatePom
+* Builds javadoc jar to build/libs/jorphan-javadoc.jar `./gradlew javadocJar`
 
 ## Release Artifacts
 
-      # Builds ZIP and TGZ artifacts for the release
-      gw :src:dist:assemble
-
-## Signing
-
-It is implemented via [gradle signing plugin](https://docs.gradle.org/5.2.1/userguide/signing_plugin.html),
-so it is done automatically provided credentials are specified via
-[signatory credentials](https://docs.gradle.org/5.2.1/userguide/signing_plugin.html#sec:signatory_credentials)
-
-      # Signs all the artifacts of the current module
-      # see results in build/**/*.asc
-      gw sign
-> **Note:** signing is performed as a part of *release artifact build*, so it will be
-> performed with `gw :src:dist:assemble`
+* Builds ZIP and TGZ artifacts for the release `./gradlew :src:dist:assemble`
