@@ -9,7 +9,7 @@
 
 # This is a basic workflow to help you get started with Actions
 
-name: Code format, analysis and publish
+name: Code format check, analysis and publish
 
 # Controls when the workflow will run
 on:
@@ -22,7 +22,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
-    name: Code analysis, clean, test, build and publis
+    name: Code format check, analysis and publish
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -36,13 +36,13 @@ jobs:
 
       - uses: android-actions/setup-android@v3
 
-      - name: Spotless code format
-        run: ./gradlew spotlessCheck
+      - name: Spotless code format check
+        run: ./gradlew spotlessCheck --no-configuration-cache
 
       - name: Sonar continuous inspection of code quality and security
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar
+        run: ./gradlew sonar --no-configuration-cache
 
       - name: Publish to Github Packages
         env:

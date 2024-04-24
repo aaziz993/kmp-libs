@@ -140,14 +140,14 @@ spotless {
         "${layout.buildDirectory}/**/*",
         "/idea/**/*",
         "/fleet/**/*",
-        "spotless/copyright",
-        ".gradle/**/*",
+        ".gradle/*",
     )
 
     // Configuration for Java files
     java {
         target("**/*.java")
-        targetExclude(*excludeSourceFileTargets.map { "$it.java" }.toTypedArray())
+        // Exclude files in the gitignore directories
+        targetExclude(*(excludeSourceFileTargets.map { "$it.java" } + "spotless/copyright.java").toTypedArray())
         googleJavaFormat().aosp() // Use Android Open Source Project style
         removeUnusedImports() // Automatically remove unused imports
         trimTrailingWhitespace() // Remove trailing whitespace
@@ -157,8 +157,8 @@ spotless {
     // Configuration for Kotlin files
     kotlin {
         target("**/*.kt")
-        // Exclude files in the build directory
-        targetExclude(*excludeSourceFileTargets.map { "$it.kt" }.toTypedArray())
+        // Exclude files in the gitignore directories
+        targetExclude(*(excludeSourceFileTargets.map { "$it.kt" } + "spotless/copyright.kt").toTypedArray())
         // Use ktlint with version 1.2.1 and custom .editorconfig
         ktlint("1.2.1").setEditorConfigPath(providers.gradleProperty("spotless.editor.config.file"))
         // Allow toggling Spotless off and on within code files using comments
@@ -169,23 +169,16 @@ spotless {
 
     format("kts") {
         target("**/*.kts")
-        // Exclude files in the build directory
-        targetExclude(*excludeSourceFileTargets.map { "$it.kts" }.toTypedArray())
+        // Exclude files in the gitignore directories
+        targetExclude(*(excludeSourceFileTargets.map { "$it.kts" } + "spotless/copyright.kts").toTypedArray())
         // Look for the first line that doesn't have a block comment (assumed to be the license)
         licenseHeaderFile(providers.gradleProperty("spotless.kts.license.header.file"), "(^(?![\\/ ]\\*).*$)")
     }
 
-    format("misc") {
-        target("**/*.md", "**/.gitignore")
-        indentWithSpaces()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-
     format("xml") {
         target("**/*.xml")
-        // Exclude files in the build directory
-        targetExclude(*excludeSourceFileTargets.map { "$it.xml" }.toTypedArray())
+        // Exclude files in the gitignore directories
+        targetExclude(*(excludeSourceFileTargets.map { "$it.xml" } + "spotless/copyright.xml").toTypedArray())
         // Look for the first XML tag that isn't a comment (<!--) or the xml declaration (<?xml)
         licenseHeaderFile(providers.gradleProperty("spotless.xml.license.header.file"), "(<[^!?])")
     }
@@ -195,6 +188,21 @@ spotless {
         target("*.gradle.kts")
         // Apply ktlint to Gradle Kotlin scripts
         ktlint("1.2.1")
+    }
+
+    format("misc") {
+        target("**/*.md", "**/.gitignore")
+        // Exclude files in the gitignore directories
+        targetExclude(
+            *(
+                excludeSourceFileTargets.map {
+                    "$it.md"
+                } + excludeSourceFileTargets.map { "$it.gitignore" }
+                ).toTypedArray(),
+        )
+        indentWithSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }
 
