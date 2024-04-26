@@ -22,7 +22,7 @@
 -printmapping mapping.txt
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 -allowaccessmodification
--keepattributes *Annotation*, SourceFile,LineNumberTable
+-keepattributes *Annotation*, SourceFile, LineNumberTable
 -renamesourcefileattribute SourceFile
 -repackageclasses ''
 
@@ -33,8 +33,6 @@
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
-#-keep public class com.android.vending.licensing.ILicensingService
-#-dontnote com.android.vending.licensing.ILicensingService
 
 # Explicitly preserve all serialization members. The Serializable interface
 # is only a marker interface, so it wouldn't save them.
@@ -53,7 +51,7 @@
 }
 
 -keepclasseswithmembernames class * {
-#    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet);
 }
 
 -keepclasseswithmembernames class * {
@@ -76,9 +74,9 @@
     public protected *;
 }
 
-#-keep class * implements android.os.Parcelable {
-#  public static final android.os.Parcelable$Creator *;
-#}
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}
 ##---------------End: proguard configuration common for all Android apps ----------
 
 #---------------Begin: proguard configuration for support library  ----------
@@ -92,7 +90,7 @@
 # platform version. We know about them, and they are safe.
 -dontwarn android.support.**
 -dontwarn com.google.ads.**
-##---------------End: proguard configuration for Gson  ----------
+##---------------End: proguard configuration for support library  ----------
 
 ##---------------Begin: proguard configuration for Gson  ----------
 # Gson uses generic type information stored in a class file when working with fields. Proguard
@@ -104,16 +102,31 @@
 
 # Gson specific classes
 #-keep class sun.misc.Unsafe { *; }
-#-keep class com.google.gson.stream.** { *; }
+-keep class com.google.gson.stream.** { *; }
 
 # Application classes that will be serialized/deserialized over Gson
-#-keep class com.example.model.** { *; }
+-keep class com.example.model.** { *; }
 
 ##---------------End: proguard configuration for Gson  ----------
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+
+#---------------Begin: proguard configuration for retrofit library  ----------
+# Retain generic type information for use by reflection by converters and adapters.
+-keepattributes Signature
+# Retain service method parameters.
+-keepclassmembers,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+
+##---------------End: proguard configuration for Retrofit  ----------
+
+#---------------Begin: proguard configuration for OkHttp3 library  ----------
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+
+##---------------End: proguard configuration for Retrofit  ----------
+
+## Kotlinx serialization
+-keepattributes *Annotation*, InnerClasses
