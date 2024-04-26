@@ -1,11 +1,14 @@
+.PHONY: chmod-gradlew publish-github publish-space publish-maven format format-check clean
+
 chmod-gradlew:
 	git update-index --chmod=+x gradlew
+
+publish-github: # Publish to Github Packages
+	chmod 777 -R scripts/ && ./scripts/publish-github.sh
 
 publish-space: # Publish to Space Packages
 	chmod 777 -R scripts/ && ./scripts/publish-space.sh
 
-publish-github: # Publish to Github Packages
-	chmod 777 -R scripts/ && ./scripts/publish-github.sh
 
 publish-maven: # Publish to Maven Central
 	chmod 777 -R scripts/ && ./scripts/publish-maven.sh

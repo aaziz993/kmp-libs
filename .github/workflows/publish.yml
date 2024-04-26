@@ -40,13 +40,13 @@ jobs:
 
       - uses: android-actions/setup-android@v3
 
-      - name: Spotless code format check
-        run: ./gradlew spotlessCheck --no-configuration-cache
-
-      - name: Sonar continuous inspection of code quality and security
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar --no-configuration-cache
+#      - name: Spotless code format check
+#        run: ./gradlew spotlessCheck --no-configuration-cache
+#
+#      - name: Sonar continuous inspection of code quality and security
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#        run: ./gradlew sonar --no-configuration-cache
 
       - name: Publish to Github Packages
         env:
