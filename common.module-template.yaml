@@ -20,3 +20,16 @@ test-dependencies:
   - $libs.kotest.framework.engine
   - $libs.kotest.framework.datatest
   - $libs.kotlinx.coroutines.test
+
+settings:
+  kotlin:
+    languageVersion: 1.9
+    serialization:
+      format: json  # JSON or other format
+
+test-settings:
+  kotlin:
+    languageVersion: 1.9
+    serialization:
+      format: json  # JSON or other format
+
