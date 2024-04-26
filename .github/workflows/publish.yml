@@ -40,13 +40,13 @@ jobs:
 
       - uses: android-actions/setup-android@v3
 
-#      - name: Spotless code format check
-#        run: ./gradlew spotlessCheck --no-configuration-cache
-#
-#      - name: Sonar continuous inspection of code quality and security
-#        env:
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#        run: ./gradlew sonar --no-configuration-cache
+      - name: Spotless code format check
+        run: ./gradlew spotlessCheck --no-configuration-cache
+
+      - name: Sonar continuous inspection of code quality and security
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonar --no-configuration-cache
 
       - name: Publish to Github Packages
         env:
@@ -55,4 +55,4 @@ jobs:
           SINGING_GNUPG_KEY_ID: ${{ secrets.SINGING_GNUPG_KEY_ID }}
           SIGNING_GNUPG_KEY_PASSPHRASE: ${{ secrets.SIGNING_GNUPG_KEY_PASSPHRASE }}
           SINGING_GNUPG_KEY: ${{ secrets.SINGING_GNUPG_KEY }}
-        run: echo PASSWORD = "[$GITHUB_PASSWORD]"
+        run: make publish-github
