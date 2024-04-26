@@ -110,6 +110,8 @@ android {
                 // Includes the default ProGuard rules files that are packaged with
                 // the Android Gradle plugin. To learn more, go to the section about
                 // R8 configuration files.
+                // getDefaultProguardFile() is a simple helper method that fetches them out of build/intermediates/proguard-files.
+                // The Android Gradle Plugin (AGP) puts them there.
                 getDefaultProguardFile("proguard-android-optimize.txt"),
 
                 // List additional ProGuard rules for the given build type here. By default,
@@ -117,7 +119,7 @@ android {
                 // at the root directory of each module).
 
                 // Includes a local, custom Proguard rules file
-                "proguard-rules.pro",
+                "proguard/proguard-rules.pro",
             )
             testProguardFiles(
                 // The proguard files listed here are included in the
