@@ -44,8 +44,8 @@ job("Code format check, analysis and publish") {
             "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
         ) {
             // The only way to get a secret in a shell script is an env variable
-            env["SIGNING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
-            env["SIGNING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
+            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
+            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
             env["SIGNING_GNUPG_PASSPHRASE"] = "{{ project:signing.gnupg.passphrase }}"
             shellScript {
                 interpreter = "/bin/bash"
@@ -62,8 +62,8 @@ job("Code format check, analysis and publish") {
             // The only way to get a secret in a shell script is an env variable
             env["SONATYPE_USERNAME"] = "{{ project:sonatype.username }}"
             env["SONATYPE_PASSWORD"] = "{{ project:sonatype.password }}"
-            env["SIGNING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
-            env["SIGNING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
+            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
+            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
             env["SIGNING_GNUPG_PASSPHRASE"] = "{{ project:signing.gnupg.passphrase }}"
             shellScript {
                 interpreter = "/bin/bash"

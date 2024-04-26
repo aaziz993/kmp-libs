@@ -12,9 +12,9 @@ export ORG_GRADLE_PROJECT_signingInMemoryKeyPassword
 ORG_GRADLE_PROJECT_signingInMemoryKeyPassword="${SIGNING_GNUPG_PASSPHRASE:=$(property "signing.gnupg.passphrase" "$local_properties_file")}"
 
 # GPG VARIABLES PROVIDED IN ENVIRONMENT VARIABLES
-if [[ -n "$SINGING_GNUGPG_KEY_ID" && -n "$SINGING_GNUGPG_KEY" ]];then
-    ORG_GRADLE_PROJECT_signingInMemoryKeyId=SINGING_GNUGPG_KEY_ID
-    ORG_GRADLE_PROJECT_signingInMemoryKey=SINGING_GNUGPG_KEY
+if [[ -n "$SINGING_GNUPG_KEY_ID" && -n "$SINGING_GNUPG_KEY" ]];then
+    ORG_GRADLE_PROJECT_signingInMemoryKeyId=SINGING_GNUPG_KEY_ID
+    ORG_GRADLE_PROJECT_signingInMemoryKey=SINGING_GNUPG_KEY
 else
 
     signing_gnupg_key_file="${SIGNING_GNUPG_FILE:=$(property "signing.gnupg.key.file" "$gradle_properties_file")}"

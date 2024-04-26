@@ -16,7 +16,7 @@ A Test plan that caused the issue as well as any error messages are also very he
 
 Contact:
 
-* My email: [a.atoev93@gmail.com](https://gmail.com)
+* KMP Developers mail list: [a.atoev93@gmail.com](https://gmail.com)
 * or ask question on [stackoverflow](https://stackoverflow.com/questions/tagged/kmp).
 
 ## :bar_chart: What needs to be developed
@@ -66,7 +66,7 @@ The best way to make sure your issue or feature is addressed is to submit a patc
 We accept patches through:
 
 * pull requests
-* patch attached to [KMP developers mailing list](https://jmeter.apache.org/mail2.html#JMeterDev).
+* patch attached to KMP developer mail list: [a.atoev93@gmail.com](https://gmail.com).
 
 However, before sending a patch, please make sure that the following applies:
 
@@ -82,7 +82,7 @@ However, before sending a patch, please make sure that the following applies:
 We do love to enhance KMP with you to become more powerful!
 The best way to work out your idea is to discuss it first at our dev mailing list:
 
-* My email: [a.atoev93@gmail.com](https://gmail.com)
+* KMP Developer mail list: [a.atoev93@gmail.com](https://gmail.com)
 
 Please, if you can, don't just throw us the code of a new feature; lets figure first together
 what would be the best approach regarding the current architecture and future plans,
