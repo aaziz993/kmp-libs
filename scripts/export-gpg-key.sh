@@ -22,8 +22,3 @@ else
     ORG_GRADLE_PROJECT_signingInMemoryKeyId="$(gpg --list-keys --keyid-format short "$(property "signing.gnupg.name.real" "$gradle_properties_file" )" | awk '$1 == "pub" { print $2 }' | cut -d'/' -f2)"
     ORG_GRADLE_PROJECT_signingInMemoryKey="$(gpg --pinentry-mode=loopback --passphrase="$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword" --export-secret-keys --armor "$ORG_GRADLE_PROJECT_signingInMemoryKeyId" | grep -v '\-\-' | grep -v '^=.' | tr -d '\n')"
 fi
-
-echo SIGNING KEY ID = "$ORG_GRADLE_PROJECT_signingInMemoryKeyId"
-echo SIGNING KEY PASSPHRASE =  "$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword"
-echo SIGNING KEY = "$ORG_GRADLE_PROJECT_signingInMemoryKey"
-
