@@ -151,8 +151,6 @@ buildConfig {
     // https://github.com/gmazzo/gradle-buildconfig-plugin#usage-in-kts
 }
 
-println("DIR=" + layout.buildDirectory)
-
 spotless {
     lineEndings = LineEnding.UNIX
 
