@@ -1,0 +1,9 @@
+product:
+  type: lib
+  platforms: [jvm, android,iosX64, iosArm64, iosSimulatorArm64,linuxX64 ]
+
+dependencies:
+  - $libs.kotest.assertions.core
+  - $libs.kotest.framework.engine
+  - $libs.kotest.framework.datatest
+  - $libs.kotlinx.coroutines.test

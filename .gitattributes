@@ -17,8 +17,5 @@
 
 # Blow files don't have extension, so we mention them explicitly
 /gradlew           text eol=lf executable
-/bin/jmeter        text eol=lf executable
-/bin/jmeter-server text eol=lf executable
-/bin/mirror-server text eol=lf executable
-/xdocs/changes.xml merge=union
-/xdocs/changes_history.xml merge=union
+/xdocs/changes.html merge=union
+/xdocs/changes_history.html merge=union

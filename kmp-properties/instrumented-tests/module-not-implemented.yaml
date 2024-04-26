@@ -1,0 +1,11 @@
+# NOTE: Auxiliary Modules design is work in progress is not implemented in the prototype.
+product: android/instrumented-tests
+
+dependencies:
+  - ../test-utils
+  - androidx.test.uiautomator:uiautomator:2.3.0
+
+settings:
+  android:
+    testInstrumentationRunnerArguments:
+      clearPackageData: true
