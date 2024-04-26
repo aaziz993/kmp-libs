@@ -53,6 +53,6 @@ jobs:
           GITHUB_USERNAME: ${{ github.actor }}
           GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           SINGING_GNUPG_KEY_ID: ${{ secrets.SINGING_GNUPG_KEY_ID }}
-          SINGING_GNUPG_KEY: ${{ secrets.SINGING_GNUPG_KEY }}
           SIGNING_GNUPG_PASSPHRASE: ${{ secrets.SIGNING_GNUPG_PASSPHRASE }}
+          SINGING_GNUPG_KEY: ${{ secrets.SINGING_GNUPG_KEY }}
         run: make publish-github

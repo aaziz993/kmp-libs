@@ -23,3 +23,7 @@ else
     ORG_GRADLE_PROJECT_signingInMemoryKey="$(gpg --pinentry-mode=loopback --passphrase="$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword" --export-secret-keys --armor "$ORG_GRADLE_PROJECT_signingInMemoryKeyId" | grep -v '\-\-' | grep -v '^=.' | tr -d '\n')"
 fi
 
+echo "$ORG_GRADLE_PROJECT_signingInMemoryKeyId"
+echo "$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword"
+echo "$ORG_GRADLE_PROJECT_signingInMemoryKey"
+

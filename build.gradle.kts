@@ -141,22 +141,35 @@ buildConfig {
     // https://github.com/gmazzo/gradle-buildconfig-plugin#usage-in-kts
 }
 
+println("DIR=" + layout.buildDirectory)
+
 spotless {
     val excludeSourceFileTargets = listOf(
-        "${layout.buildDirectory}/**/*",
-        "/idea/**/*",
-        "/fleet/**/*",
-        ".gradle/*",
+        "**/generated-src/**",
+        "**/build/**",
+        "**/build-*/**",
+        "**/.idea/**",
+        "**/.fleet/**",
+        "**/.gradle/**",
+        "/spotless/**",
     )
 
     // Configuration for Java files
     java {
         target("**/*.java")
         // Exclude files in the gitignore directories
-        targetExclude(*(excludeSourceFileTargets.map { "$it.java" } + "spotless/copyright.java").toTypedArray())
-        googleJavaFormat().aosp() // Use Android Open Source Project style
-        removeUnusedImports() // Automatically remove unused imports
-        trimTrailingWhitespace() // Remove trailing whitespace
+        targetExclude(*excludeSourceFileTargets.toTypedArray())
+        // Adds the ability to have spotless ignore specific portions of a project. The usage looks like the following
+        toggleOffOn()
+        // Tells spotless to format according to the Google Style Guide(https://google.github.io/styleguide/javaguide.html)
+        googleJavaFormat()
+        // Will remove any unused imports from any of your Java classes
+        removeUnusedImports()
+        // Will remove any extra whitespace at the end of lines
+        trimTrailingWhitespace()
+        // Will add a newline character to the end of files content
+        endWithNewline()
+        // Specifies license header file
         licenseHeaderFile(providers.gradleProperty("spotless.java.license.header.file"))
     }
 
@@ -164,28 +177,44 @@ spotless {
     kotlin {
         target("**/*.kt")
         // Exclude files in the gitignore directories
-        targetExclude(*(excludeSourceFileTargets.map { "$it.kt" } + "spotless/copyright.kt").toTypedArray())
+        targetExclude(*excludeSourceFileTargets.toTypedArray())
+        // Adds the ability to have spotless ignore specific portions of a project. The usage looks like the following
+        toggleOffOn()
         // Use ktlint with version 1.2.1 and custom .editorconfig
         ktlint("1.2.1").setEditorConfigPath(providers.gradleProperty("spotless.editor.config.file"))
-        // Allow toggling Spotless off and on within code files using comments
-        toggleOffOn()
+        // Will remove any extra whitespace at the end of lines
         trimTrailingWhitespace()
+        // Will add a newline character to the end of files content
+        endWithNewline()
+        // Specifies license header file
         licenseHeaderFile(providers.gradleProperty("spotless.kotlin.license.header.file"))
     }
 
     format("kts") {
         target("**/*.kts")
         // Exclude files in the gitignore directories
-        targetExclude(*(excludeSourceFileTargets.map { "$it.kts" } + "spotless/copyright.kts").toTypedArray())
-        // Look for the first line that doesn't have a block comment (assumed to be the license)
+        targetExclude(*excludeSourceFileTargets.toTypedArray())
+        // Adds the ability to have spotless ignore specific portions of a project. The usage looks like the following
+        toggleOffOn()
+        // Will remove any extra whitespace at the end of lines
+        trimTrailingWhitespace()
+        // Will add a newline character to the end of files content
+        endWithNewline()
+        // Specifies license header file
         licenseHeaderFile(providers.gradleProperty("spotless.kts.license.header.file"), "(^(?![\\/ ]\\*).*$)")
     }
 
     format("xml") {
         target("**/*.xml")
         // Exclude files in the gitignore directories
-        targetExclude(*(excludeSourceFileTargets.map { "$it.xml" } + "spotless/copyright.xml").toTypedArray())
-        // Look for the first XML tag that isn't a comment (<!--) or the xml declaration (<?xml)
+        targetExclude(*excludeSourceFileTargets.toTypedArray())
+        // Adds the ability to have spotless ignore specific portions of a project. The usage looks like the following
+        toggleOffOn()
+        // Will remove any extra whitespace at the end of lines
+        trimTrailingWhitespace()
+        // Will add a newline character to the end of files content
+        endWithNewline()
+        // Specifies license header file
         licenseHeaderFile(providers.gradleProperty("spotless.xml.license.header.file"), "(<[^!?])")
     }
 
@@ -199,15 +228,14 @@ spotless {
     format("misc") {
         target("**/*.md", "**/.gitignore")
         // Exclude files in the gitignore directories
-        targetExclude(
-            *(
-                excludeSourceFileTargets.map {
-                    "$it.md"
-                } + excludeSourceFileTargets.map { "$it.gitignore" }
-                ).toTypedArray(),
-        )
+        targetExclude(*excludeSourceFileTargets.flatMap { listOf("$it.md", "$it.gitignore") }.toTypedArray())
+        // Adds the ability to have spotless ignore specific portions of a project. The usage looks like the following
+        toggleOffOn()
+        // Will remove any extra whitespace at the beginning of lines
         indentWithSpaces()
+        // Will remove any extra whitespace at the end of lines
         trimTrailingWhitespace()
+        // Will add a newline character to the end of files content
         endWithNewline()
     }
 }

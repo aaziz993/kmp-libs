@@ -1,6 +1,7 @@
 *.iml
 .gradle
 .idea
+.fleet
 .DS_Store
 build
 captures
@@ -8,3 +9,7 @@ captures
 .cxx
 local.properties
 xcuserdata
+proguard/*.txt
+target
+out
+

@@ -14,10 +14,10 @@ publish: # Publish to Space Packages, Github Packages and Maven Central
 	./scripts/publish.sh
 
 format:
-	gradlew spotlessApply --no-configuration-cache
+	gradlew clean spotlessApply --no-configuration-cache
 
 format-check:
-	gradlew spotlessCheck --no-configuration-cache
+	gradlew clean spotlessCheck --no-configuration-cache
 
 clean: # Clean all
 	gradlew clean
