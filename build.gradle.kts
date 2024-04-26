@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.diffplug.spotless.LineEnding
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 import java.util.*
-import com.diffplug.spotless.LineEnding
 
 // Top-level build file where you can add configuration options common to all subprojects/modules.
 @Suppress("DSL_SCOPE_VIOLATION")
