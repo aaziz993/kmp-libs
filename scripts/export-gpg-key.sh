@@ -9,7 +9,7 @@ export ORG_GRADLE_PROJECT_signingInMemoryKeyId
 export ORG_GRADLE_PROJECT_signingInMemoryKey
 
 export ORG_GRADLE_PROJECT_signingInMemoryKeyPassword
-ORG_GRADLE_PROJECT_signingInMemoryKeyPassword="${SIGNING_GNUPG_PASSPHRASE:=$(property "signing.gnupg.passphrase" "$local_properties_file")}"
+ORG_GRADLE_PROJECT_signingInMemoryKeyPassword="${SIGNING_GNUPG_KEY_PASSPHRASE:=$(property "signing.gnupg.key.passphrase" "$local_properties_file")}"
 
 # GPG VARIABLES PROVIDED IN ENVIRONMENT VARIABLES
 if [[ -n "$SINGING_GNUPG_KEY_ID" && -n "$SINGING_GNUPG_KEY" ]];then
@@ -23,7 +23,7 @@ else
     ORG_GRADLE_PROJECT_signingInMemoryKey="$(gpg --pinentry-mode=loopback --passphrase="$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword" --export-secret-keys --armor "$ORG_GRADLE_PROJECT_signingInMemoryKeyId" | grep -v '\-\-' | grep -v '^=.' | tr -d '\n')"
 fi
 
-echo "$ORG_GRADLE_PROJECT_signingInMemoryKeyId"
-echo "$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword"
-echo "$ORG_GRADLE_PROJECT_signingInMemoryKey"
+echo SIGNING KEY ID = "$ORG_GRADLE_PROJECT_signingInMemoryKeyId"
+echo SIGNING KEY PASSPHRASE =  "$ORG_GRADLE_PROJECT_signingInMemoryKeyPassword"
+echo SIGNING KEY = "$ORG_GRADLE_PROJECT_signingInMemoryKey"
 

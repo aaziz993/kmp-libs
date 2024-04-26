@@ -15,6 +15,7 @@
  */
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 import java.util.*
+import com.diffplug.spotless.LineEnding
 
 // Top-level build file where you can add configuration options common to all subprojects/modules.
 @Suppress("DSL_SCOPE_VIOLATION")
@@ -49,32 +50,41 @@ val localProperties = project.rootProject.file("local.properties").let { file ->
     }
 }
 
-group = providers.gradleProperty("project.group").get()
+allprojects {
 
-val versionSplit = providers.gradleProperty("project.version").get().split("-", limit = 2)
-version = "${versionSplit[0]}${
-    if (providers.gradleProperty("github.automation.versioning").get().toBoolean() &&
-        System.getenv()
-            .containsKey("GITHUB_REF")
-    ) {
-        // The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
-        // If we split on '/' and take the 3rd value,
-        // we can get the release name.
-        ".${System.getenv("GITHUB_REF").split("/", limit = 3)[2]}"
-    } else {
-        ""
-    }
+    group = providers.gradleProperty("project.group").get()
 
-}${
-    if (providers.gradleProperty("jetbrains.space.automation.versioning").get().toBoolean() &&
-        System.getenv()
-            .containsKey("JB_SPACE_EXECUTION_NUMBER")
-    ) {
-        ".${System.getenv("JB_SPACE_EXECUTION_NUMBER")}"
-    } else {
-        ""
+    val versionSplit = providers.gradleProperty("project.version").get().split("-", limit = 2)
+    version = "${versionSplit[0]}${
+        if (providers.gradleProperty("github.automation.versioning").get().toBoolean() &&
+            System.getenv()
+                .containsKey("GITHUB_REF")
+        ) {
+            // The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
+            // If we split on '/' and take the 3rd value,
+            // we can get the release name.
+            ".${System.getenv("GITHUB_REF").split("/", limit = 3)[2]}"
+        } else {
+            ""
+        }
+
+    }${
+        if (providers.gradleProperty("jetbrains.space.automation.versioning").get().toBoolean() &&
+            System.getenv()
+                .containsKey("JB_SPACE_EXECUTION_NUMBER")
+        ) {
+            ".${System.getenv("JB_SPACE_EXECUTION_NUMBER")}"
+        } else {
+            ""
+        }
+    }${if (versionSplit.size > 1) "-${versionSplit[1]}" else ""}"
+}
+
+subprojects {
+    apply {
+        plugin(rootProject.libs.plugins.dokka.get().pluginId)
     }
-}${if (versionSplit.size > 1) "-${versionSplit[1]}" else ""}"
+}
 
 kotlin {
     androidTarget {
@@ -144,6 +154,8 @@ buildConfig {
 println("DIR=" + layout.buildDirectory)
 
 spotless {
+    lineEndings = LineEnding.UNIX
+
     val excludeSourceFileTargets = listOf(
         "**/generated-src/**",
         "**/build/**",
@@ -152,6 +164,8 @@ spotless {
         "**/.fleet/**",
         "**/.gradle/**",
         "/spotless/**",
+        "**/resources/**",
+        "**/buildSrc/**",
     )
 
     // Configuration for Java files
