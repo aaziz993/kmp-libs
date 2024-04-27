@@ -33,8 +33,8 @@ job("Code format check, analysis and publish") {
         shellScript {
             interpreter = "/bin/bash"
             content = """
-                echo ${'$'}SINGING_GNUPG_KEY_ID
-                if [ ${'$'}SINGING_GNUPG_KEY_ID != "2923E8CD" ]; then
+                echo 234324${'$'}SINGING_GNUPG_KEY_ID345345
+                if [ ${'$'}SINGING_GNUPG_KEY_ID != "2923E8CD3" ]; then
                     echo "Wrong secret!"
                     else
                     echo "True secret!"
