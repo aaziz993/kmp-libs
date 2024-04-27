@@ -33,7 +33,7 @@ job("Code format check, analysis and publish") {
         shellScript {
             interpreter = "/bin/bash"
             content = """
-                echo ${'$'}{SINGING_GNUPG_KEY_ID:0:4}
+                echo ${'$'}{SINGING_GNUPG_KEY:0:-1}
                 """
         }
     }
