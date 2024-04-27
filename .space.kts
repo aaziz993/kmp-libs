@@ -15,6 +15,13 @@
  */
 
 job("Code format check, analysis and publish") {
+    // Users will be able to redefine these parameters in custom job run.
+    // See the 'Customize job run' section
+    parameters {
+        text("env.os", value = "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest")
+        text("gradlew.option", value = "--no-configuration-cache")
+    }
+
     startOn {
         gitPush { enabled = true }
     }
@@ -26,34 +33,37 @@ job("Code format check, analysis and publish") {
         shellScript {
             interpreter = "/bin/bash"
             content = """
-                    echo ${'$'}SINGING_GNUPG_KEY_ID
+                echo ${'$'}SINGING_GNUPG_KEY_ID
+                if [ ${'$'}SINGING_GNUPG_KEY_ID != "2923E8CD" ]; then
+                    echo "Wrong secret!"
+                fi
                 """
         }
     }
 
 //    container(
 //        "Spotless code format check",
-//        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+//        "{{ env.os }}",
 //    ) {
 //        kotlinScript { api ->
-//            api.gradlew("spotlessCheck", "--no-configuration-cache")
+//            api.gradlew("spotlessCheck", "{{ gradlew.option }}")
 //        }
 //    }
 //
 //    container(
 //        "Sonar continuous inspection of code quality and security",
-//        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+//        "{{ env.os }}",
 //    ) {
 //        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
 //        kotlinScript { api ->
-//            api.gradlew("sonar", "--no-configuration-cache")
+//            api.gradlew("sonar", "{{ gradlew.option }}")
 //        }
 //    }
 //
 //    parallel {
 //        container(
 //            "Publish to Space Packages",
-//            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+//            "{{ env.os }}",
 //        ) {
 //            // The only way to get a secret in a shell script is an env variable
 //            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
@@ -69,7 +79,7 @@ job("Code format check, analysis and publish") {
 //
 //        container(
 //            "Publish to Maven Central",
-//            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+//            "{{ env.os }}",
 //        ) {
 //            // The only way to get a secret in a shell script is an env variable
 //            env["SONATYPE_USERNAME"] = "{{ project:sonatype.username }}"
