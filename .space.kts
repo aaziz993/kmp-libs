@@ -36,6 +36,8 @@ job("Code format check, analysis and publish") {
                 echo ${'$'}SINGING_GNUPG_KEY_ID
                 if [ ${'$'}SINGING_GNUPG_KEY_ID != "2923E8CD" ]; then
                     echo "Wrong secret!"
+                    else
+                    echo "True secret!"
                 fi
                 """
         }
