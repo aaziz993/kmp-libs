@@ -56,18 +56,26 @@ allprojects {
 
     val versionSplit = providers.gradleProperty("project.version").get().split("-", limit = 2)
     version = "${versionSplit[0]}${
-        if (providers.gradleProperty("github.automation.versioning").get().toBoolean() &&
-            System.getenv()
-                .containsKey("GITHUB_REF")
-        ) {
-            // The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
-            // If we split on '/' and take the 3rd value,
-            // we can get the release name.
-            ".${System.getenv("GITHUB_REF").split("/", limit = 3)[2]}"
+        if (providers.gradleProperty("github.automation.versioning").get().toBoolean()) {
+            if (System.getenv().containsKey("GITHUB_RUN_NUMBER")) {
+                // The GITHUB_RUN_NUMBER A unique number for each run of a particular workflow in a repository.
+                // This number begins at 1 for the workflow's first run, and increments with each new run.
+                // This number does not change if you re-run the workflow run.
+                ".${System.getenv("GITHUB_RUN_NUMBER")}"
+            } else {
+                ""
+            } +
+                if (System.getenv().containsKey("GITHUB_REF_NAME")) {
+                    // The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
+                    // If we split on '/' and take the 3rd value,
+                    // we can get the release name.
+                    ".${System.getenv("GITHUB_REF_NAME").split("/", limit = 3)[2]}"
+                } else {
+                    ""
+                }
         } else {
             ""
         }
-
     }${
         if (providers.gradleProperty("jetbrains.space.automation.versioning").get().toBoolean() &&
             System.getenv()

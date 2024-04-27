@@ -52,6 +52,7 @@ jobs:
         env:
           GITHUB_USERNAME: ${{ github.actor }}
           GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_RUN_NUMBER: ${{ github.run_attempt }}
           SINGING_GNUPG_KEY_ID: ${{ secrets.SINGING_GNUPG_KEY_ID }}
           SIGNING_GNUPG_KEY_PASSPHRASE: ${{ secrets.SIGNING_GNUPG_KEY_PASSPHRASE }}
           SINGING_GNUPG_KEY: ${{ secrets.SINGING_GNUPG_KEY }}

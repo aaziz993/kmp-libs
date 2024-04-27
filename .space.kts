@@ -19,58 +19,70 @@ job("Code format check, analysis and publish") {
         gitPush { enabled = true }
     }
 
-    container(
-        "Spotless code format check",
-        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
-    ) {
-        kotlinScript { api ->
-            api.gradlew("spotlessCheck", "--no-configuration-cache")
-        }
-    }
-
-    container(
-        "Sonar continuous inspection of code quality and security",
-        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
-    ) {
-        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
-        kotlinScript { api ->
-            api.gradlew("sonar", "--no-configuration-cache")
-        }
-    }
-
-    parallel {
-        container(
-            "Publish to Space Packages",
-            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
-        ) {
-            // The only way to get a secret in a shell script is an env variable
-            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
-            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
-            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
-            shellScript {
-                interpreter = "/bin/bash"
-                content = """
-                    make publish-space
+    container("TEST", "ubuntu") {
+        env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
+        env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
+        env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
+        shellScript {
+            interpreter = "/bin/bash"
+            content = """
+                    echo ${'$'}SINGING_GNUPG_KEY_ID
                 """
-            }
-        }
-
-        container(
-            "Publish to Maven Central",
-            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
-        ) {
-            // The only way to get a secret in a shell script is an env variable
-            env["SONATYPE_USERNAME"] = "{{ project:sonatype.username }}"
-            env["SONATYPE_PASSWORD"] = "{{ project:sonatype.password }}"
-            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
-            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
-            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
-            shellScript {
-                interpreter = "/bin/bash"
-                content = """
-                    make publish-maven
-                """
-            }
         }
     }
+
+//    container(
+//        "Spotless code format check",
+//        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+//    ) {
+//        kotlinScript { api ->
+//            api.gradlew("spotlessCheck", "--no-configuration-cache")
+//        }
+//    }
+//
+//    container(
+//        "Sonar continuous inspection of code quality and security",
+//        "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+//    ) {
+//        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
+//        kotlinScript { api ->
+//            api.gradlew("sonar", "--no-configuration-cache")
+//        }
+//    }
+//
+//    parallel {
+//        container(
+//            "Publish to Space Packages",
+//            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+//        ) {
+//            // The only way to get a secret in a shell script is an env variable
+//            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
+//            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
+//            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
+//            shellScript {
+//                interpreter = "/bin/bash"
+//                content = """
+//                    make publish-space
+//                """
+//            }
+//        }
+//
+//        container(
+//            "Publish to Maven Central",
+//            "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest",
+//        ) {
+//            // The only way to get a secret in a shell script is an env variable
+//            env["SONATYPE_USERNAME"] = "{{ project:sonatype.username }}"
+//            env["SONATYPE_PASSWORD"] = "{{ project:sonatype.password }}"
+//            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
+//            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
+//            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
+//            shellScript {
+//                interpreter = "/bin/bash"
+//                content = """
+//                    make publish-maven
+//                """
+//            }
+//        }
+//    }
 }

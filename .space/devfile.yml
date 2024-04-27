@@ -41,3 +41,7 @@ attributes:
       - name: JB_SPACE_CLIENT_SECRET
         description: 'Jetbrains Space permanent token'
     projectRoot: .
+components:
+  - name: env-os
+    container:
+      image: aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest
