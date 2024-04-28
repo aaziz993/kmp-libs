@@ -15,7 +15,7 @@
  */
 package properties
 
-import kotlinx.coroutines.flow.StateFlow
 import kotlin.properties.ReadOnlyProperty
+import kotlinx.coroutines.flow.StateFlow
 
 interface StateFlowPropertyDelegate<T> : ReadOnlyProperty<Properties, StateFlow<T>>

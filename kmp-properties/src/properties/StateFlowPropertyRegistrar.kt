@@ -16,8 +16,8 @@
 package properties
 
 import com.javiersc.kotlinx.coroutines.run.blocking.runBlocking
-import kotlinx.coroutines.flow.StateFlow
 import kotlin.reflect.KProperty
+import kotlinx.coroutines.flow.StateFlow
 
 class StateFlowPropertyRegistrar<T>(private val key: String? = null, private val defaultValue: T? = null) {
     operator fun provideDelegate(thisRef: Properties, property: KProperty<*>): StateFlowPropertyDelegate<T> {

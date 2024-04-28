@@ -15,9 +15,9 @@
  */
 package properties
 
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.StateFlow
 import properties.exception.PropertyNotFoundException
-import kotlin.coroutines.cancellation.CancellationException
 
 abstract class Properties(
     parent: Properties? = null,
