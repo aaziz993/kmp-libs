@@ -36,6 +36,9 @@ job("Code format check, quality check, test and publish") {
     }
 
     container("Spotless code format check", "{{ env.os }}") {
+        env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
+        env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
+        env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
         shellScript {
             content = """
                 echo TEST CODE '2923E8CD'
