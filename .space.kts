@@ -36,68 +36,57 @@ job("Code format check, quality check, test and publish") {
     }
 
     container("Spotless code format check", "{{ env.os }}") {
-        env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
-        env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
-        env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
         shellScript {
-            content = """
-                echo TEST CODE '2923E8CD'
-            """.trimIndent()
+            content = "apt install -y make && make format-check"
         }
     }
 
-//    container("Spotless code format check", "{{ env.os }}") {
-//        shellScript {
-//            content = "apt install -y make && make format-check"
-//        }
-//    }
-//
-//    container("Sonar continuous inspection of code quality and security", "{{ env.os }}") {
-//        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
-//        shellScript {
-//            content = "apt install -y make && make quality-check"
-//        }
-//    }
-//
-//    container("Test", "{{ env.os }}") {
-//        shellScript {
-//            content = "apt install -y make && make test"
-//        }
-//    }
-//
-//    parallel {
-//        container(
-//            "Publish to Space Packages",
-//            "{{ env.os }}",
-//        ) {
-//            // The only way to get a secret in a shell script is an env variable
-//            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
-//            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
-//            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
-//            shellScript {
-//                interpreter = "/bin/bash"
-//                content = """
-//                    make publish-space
-//                """
-//            }
-//        }
-//
-//        container(
-//            "Publish to Maven Central",
-//            "{{ env.os }}",
-//        ) {
-//            // The only way to get a secret in a shell script is an env variable
-//            env["SONATYPE_USERNAME"] = "{{ project:sonatype.username }}"
-//            env["SONATYPE_PASSWORD"] = "{{ project:sonatype.password }}"
-//            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
-//            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
-//            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
-//            shellScript {
-//                interpreter = "/bin/bash"
-//                content = """
-//                    make publish-maven
-//                """
-//            }
-//        }
-//    }
+    container("Sonar continuous inspection of code quality and security", "{{ env.os }}") {
+        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
+        shellScript {
+            content = "apt install -y make && make quality-check"
+        }
+    }
+
+    container("Test", "{{ env.os }}") {
+        shellScript {
+            content = "apt install -y make && make test"
+        }
+    }
+
+    parallel {
+        container(
+            "Publish to Space Packages",
+            "{{ env.os }}",
+        ) {
+            // The only way to get a secret in a shell script is an env variable
+            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
+            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
+            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
+            shellScript {
+                interpreter = "/bin/bash"
+                content = """
+                    make publish-space
+                """
+            }
+        }
+
+        container(
+            "Publish to Maven Central",
+            "{{ env.os }}",
+        ) {
+            // The only way to get a secret in a shell script is an env variable
+            env["SONATYPE_USERNAME"] = "{{ project:sonatype.username }}"
+            env["SONATYPE_PASSWORD"] = "{{ project:sonatype.password }}"
+            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
+            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
+            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
+            shellScript {
+                interpreter = "/bin/bash"
+                content = """
+                    make publish-maven
+                """
+            }
+        }
+    }
 }
