@@ -34,8 +34,7 @@ fun String.toJavaVersion() = JavaVersion.valueOf(
     "VERSION_${
         if (this.toDouble() < 10) {
             this.replace(".", "_")
-        }
-        else {
+        } else {
             this
         }
     }",
@@ -43,8 +42,7 @@ fun String.toJavaVersion() = JavaVersion.valueOf(
 
 val githubUsername: String = if (System.getenv().containsKey("GITHUB_USERNAME")) {
     System.getenv("GITHUB_USERNAME")
-}
-else {
+} else {
     providers.gradleProperty("github.username").get()
 }
 
@@ -61,25 +59,25 @@ allprojects {
 
     val versionSplit = providers.gradleProperty("project.version").get().split("-", limit = 2)
     version = "${versionSplit[0]}${
-        if (providers.gradleProperty("github.actions.versioning.ref.name").get().toBoolean() && System.getenv()
+        if (providers.gradleProperty("github.actions.versioning.ref.name").get().toBoolean() &&
+            System.getenv()
                 .containsKey("GITHUB_RUN_NUMBER")
         ) {
             // The GITHUB_RUN_NUMBER A unique number for each run of a particular workflow in a repository.
             // This number begins at 1 for the workflow's first run, and increments with each new run.
             // This number does not change if you re-run the workflow run.
             ".${System.getenv("GITHUB_RUN_NUMBER")}"
-        }
-        else {
+        } else {
             ""
         }
     }${
-        if (providers.gradleProperty("github.actions.versioning.run.number").get().toBoolean() && System.getenv()
+        if (providers.gradleProperty("github.actions.versioning.run.number").get().toBoolean() &&
+            System.getenv()
                 .containsKey("GITHUB_REF_NAME")
         ) {
             // The GITHUB_REF_NAME provide the release name.
             ".${System.getenv("GITHUB_REF_NAME")}"
-        }
-        else {
+        } else {
             ""
         }
     }${
@@ -88,8 +86,7 @@ allprojects {
                 .containsKey("JB_SPACE_EXECUTION_NUMBER")
         ) {
             ".${System.getenv("JB_SPACE_EXECUTION_NUMBER")}"
-        }
-        else {
+        } else {
             ""
         }
     }${if (versionSplit.size > 1) "-${versionSplit[1]}" else ""}"
@@ -306,8 +303,7 @@ publishing {
             url = uri(
                 if (version.toString().endsWith("SNAPSHOT")) {
                     providers.gradleProperty("jetbrains.space.packages.snapshots.url")
-                }
-                else {
+                } else {
                     providers.gradleProperty("jetbrains.space.packages.releases.url")
                 },
             )
@@ -315,14 +311,12 @@ publishing {
             credentials {
                 username = if (System.getenv().containsKey("JB_SPACE_CLIENT_ID")) {
                     System.getenv("JB_SPACE_CLIENT_ID")
-                }
-                else {
+                } else {
                     localProperties.getProperty("jetbrains.space.client.id")
                 }
                 password = if (System.getenv().containsKey("JB_SPACE_CLIENT_SECRET")) {
                     System.getenv("JB_SPACE_CLIENT_SECRET")
-                }
-                else {
+                } else {
                     localProperties.getProperty("jetbrains.space.client.secret")
                 }
             }
@@ -336,8 +330,7 @@ publishing {
                 username = githubUsername
                 password = if (System.getenv().containsKey("GITHUB_PASSWORD")) {
                     System.getenv("GITHUB_PASSWORD")
-                }
-                else {
+                } else {
                     localProperties.getProperty("github.password")
                 }
             }
