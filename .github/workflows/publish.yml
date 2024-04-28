@@ -9,7 +9,7 @@
 
 # This is a basic workflow to help you get started with Actions
 
-name: Code format check, analysis and publish
+name: Code format check, quality check, test and publish
 
 # Controls when the workflow will run
 on:
@@ -21,8 +21,8 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  format-check-analysis-publish:
-    name: Code format check, analysis and publish
+  publish:
+    name: Code format check, quality check, test and publish
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
@@ -41,18 +41,21 @@ jobs:
       - uses: android-actions/setup-android@v3
 
       - name: Spotless code format check
-        run: ./gradlew spotlessCheck --no-configuration-cache
+        run: make format-check
 
       - name: Sonar continuous inspection of code quality and security
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar --no-configuration-cache
+        run: make quality-check
+
+      - name: Test
+        run: make test
 
       - name: Publish to Github Packages
         env:
           GITHUB_USERNAME: ${{ github.actor }}
           GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_RUN_NUMBER: ${{ github.run_attempt }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
           SINGING_GNUPG_KEY_ID: ${{ secrets.SINGING_GNUPG_KEY_ID }}
           SIGNING_GNUPG_KEY_PASSPHRASE: ${{ secrets.SIGNING_GNUPG_KEY_PASSPHRASE }}
           SINGING_GNUPG_KEY: ${{ secrets.SINGING_GNUPG_KEY }}

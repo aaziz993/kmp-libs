@@ -14,34 +14,43 @@
  * limitations under the License.
  */
 
-job("Code format check, analysis and publish") {
-    // Users will be able to redefine these parameters in custom job run.
-    // See the 'Customize job run' section
-    parameters {
-        text("env.os", value = "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest")
-        text("gradlew.option", value = "--no-configuration-cache")
-    }
-
+job("Code format check, quality check, test and publish") {
     startOn {
-        gitPush { enabled = true }
-    }
-
-    container(
-        "Spotless code format check",
-        "{{ env.os }}",
-    ) {
-        kotlinScript { api ->
-            api.gradlew("spotlessCheck", "{{ gradlew.option }}")
+        // Run on every commit...
+        gitPush {
+            enabled = true
+            // Only to the main branch
+            anyRefMatching {
+                +"refs/heads/main"
+            }
         }
     }
 
-    container(
-        "Sonar continuous inspection of code quality and security",
-        "{{ env.os }}",
-    ) {
+    // To get a parameter in a job, specify its name in a string inside double curly braces: "{{ my-param }}".
+    // You can do this in any string inside any DSL block excluding startOn, git, and kotlinScript.
+    // Users will be able to redefine these parameters in custom job run.
+    // See the 'Customize job run' section
+    parameters {
+        text("branch", "{{ run:trigger.git-push.ref }}")
+        text("env.os", "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest")
+    }
+
+    container("Spotless code format check", "{{ env.os }}") {
+        shellScript {
+            content = "apt install -y make && make format-check"
+        }
+    }
+
+    container("Sonar continuous inspection of code quality and security", "{{ env.os }}") {
         env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
-        kotlinScript { api ->
-            api.gradlew("sonar", "{{ gradlew.option }}")
+        shellScript {
+            content = "apt install -y make && make quality-check"
+        }
+    }
+
+    container("Test", "{{ env.os }}") {
+        shellScript {
+            content = "apt install -y make && make test"
         }
     }
 
