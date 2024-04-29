@@ -44,15 +44,7 @@ job("Code format check, quality check, test and publish") {
         }
     }
 
-    // To get a parameter in a job, specify its name in a string inside double curly braces: "{{ my-param }}".
-    // You can do this in any string inside any DSL block excluding startOn, git, and kotlinScript.
-    // Users will be able to redefine these parameters in custom job run.
-    // See the 'Customize job run' section
-    parameters {
-        text("env.os", "aaziz93.registry.jetbrains.space/p/aaziz-93/containers/env-os:latest")
-    }
-
-    container("Read gradle.properties", "{{ env.os }}") {
+    container("Read gradle.properties", "{{ jetbrains.space.automation.env.os }}") {
         kotlinScript { api ->
             // Do not use workDir to get the path to the working directory in a shellScript or kotlinScript.
             // Instead, use the JB_SPACE_WORK_DIR_PATH environment variable.
@@ -69,20 +61,20 @@ job("Code format check, quality check, test and publish") {
         }
     }
 
-    container("Spotless code format check", "{{ env.os }}") {
+    container("Spotless code format check", "{{ jetbrains.space.automation.env.os }}") {
         shellScript {
             content = "apt install -y make && make format-check"
         }
     }
 
-    container("Sonar continuous inspection of code quality and security", "{{ env.os }}") {
+    container("Sonar continuous inspection of code quality and security", "{{ jetbrains.space.automation.env.os }}") {
         env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
         shellScript {
             content = "apt install -y make && make quality-check"
         }
     }
 
-    container("Test", "{{ env.os }}") {
+    container("Test", "{{ jetbrains.space.automation.env.os }}") {
         shellScript {
             content = "apt install -y make && make test"
         }
@@ -91,7 +83,7 @@ job("Code format check, quality check, test and publish") {
     parallel {
         container(
             "Publish to Space Packages",
-            "{{ env.os }}",
+            "{{ jetbrains.space.automation.env.os }}",
         ) {
             // The only way to get a secret in a shell script is an env variable
             env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
@@ -107,7 +99,7 @@ job("Code format check, quality check, test and publish") {
 
         container(
             "Publish to Maven Central",
-            "{{ env.os }}",
+            "{{ jetbrains.space.automation.env.os }}",
         ) {
             // The only way to get a secret in a shell script is an env variable
             env["SONATYPE_USERNAME"] = "{{ project:sonatype.username }}"
