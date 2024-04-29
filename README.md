@@ -6,7 +6,8 @@
 
 It is the barebones library project intended to quickly bootstrap a Kotlin Multiplatform project, that is deployable to Space Packages, Github Packages and Maven Central.
 
-## How do I publish it locally?
+## How do I publish it manually?
+1. - Install ```gpg```
 1. - Install ```make```.  See [Makefile](Makefile) publish commands.
 2. - Run ```make publish-space``` to publish to Space Packages
 3. - Run ```make publish-github``` to publish to Github Packages
