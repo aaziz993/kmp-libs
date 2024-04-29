@@ -44,7 +44,7 @@ job("Code format check, quality check, test and publish") {
         }
     }
 
-    container("Read gradle.properties", "{{ jetbrains.space.automation.env.os }}") {
+    container("Read gradle.properties", "amazoncorretto:17-alpine") {
         kotlinScript { api ->
             // Do not use workDir to get the path to the working directory in a shellScript or kotlinScript.
             // Instead, use the JB_SPACE_WORK_DIR_PATH environment variable.
