@@ -15,6 +15,7 @@
  */
 import com.diffplug.spotless.LineEnding
 import java.util.*
+import kotlinx.kover.gradle.plugin.dsl.KoverXmlReportConfig
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
 // Top-level build file where you can add configuration options common to all subprojects/modules.
@@ -24,22 +25,14 @@ plugins {
     id("com.android.library")
     alias(libs.plugins.build.config)
     alias(libs.plugins.kotest.multiplatform)
+    id("org.jetbrains.kotlinx.kover")
     alias(libs.plugins.spotless)
-    alias(libs.plugins.dokka)
     alias(libs.plugins.sonarqube)
+    alias(libs.plugins.dokka)
     alias(libs.plugins.vanniktech.maven.publish)
 }
 
-fun String.toJavaVersion() = JavaVersion.valueOf(
-    "VERSION_${
-        if (this.toDouble() < 10) {
-            this.replace(".", "_")
-        }
-        else {
-            this
-        }
-    }",
-)
+val buildDirectoryName: String = layout.buildDirectory.asFile.get().name
 
 val githubUsername: String = if (System.getenv().containsKey("GITHUB_USERNAME")) {
     System.getenv("GITHUB_USERNAME")
@@ -48,7 +41,7 @@ else {
     providers.gradleProperty("github.username").get()
 }
 
-val localProperties = project.rootProject.file("local.properties").let { file ->
+val localProperties: Properties = project.rootProject.file("local.properties").let { file ->
     Properties().apply {
         if (file.exists()) {
             load(file.reader())
@@ -129,6 +122,8 @@ android {
     compileSdk = providers.gradleProperty("android.compile.sdk").get().toInt()
     defaultConfig {
         minSdk = providers.gradleProperty("android.default.config.min.sdk").get().toInt()
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("proguard/consumer-rules.pro")
     }
     compileOptions {
         sourceCompatibility =
@@ -178,12 +173,41 @@ buildConfig {
     // https://github.com/gmazzo/gradle-buildconfig-plugin#usage-in-kts
 }
 
+koverReport {
+    filters {
+        excludes {
+            classes("com.baeldung.code.not.covered")
+        }
+    }
+
+    verify {
+        rule {
+            isEnabled = true
+            bound {
+                minValue = 80 // Minimum coverage percentage
+            }
+        }
+    }
+}
+
+tasks.create("generateKoverReport", Task::class) {
+    dependsOn("koverHtmlReport", "koverXmlReport", "test")
+}
+
+tasks.withType<Test> {
+    finalizedBy("generateKoverReport")
+}
+
+tasks.clean {
+    delete.add(buildDirectoryName)
+}
+
 spotless {
     lineEndings = LineEnding.UNIX
 
     val excludeSourceFileTargets = listOf(
         "**/generated-src/**",
-        "**/build/**",
+        "**/$buildDirectoryName/**",
         "**/build-*/**",
         "**/.idea/**",
         "**/.fleet/**",
@@ -279,21 +303,6 @@ spotless {
     }
 }
 
-// Project documentation
-val dokkaOutputDir = layout.buildDirectory.dir("dokka")
-tasks.dokkaHtml { outputDirectory.set(file(dokkaOutputDir)) }
-val deleteDokkaOutputDir by tasks.register<Delete>("deleteDokkaOutputDirectory") {
-    delete(
-        dokkaOutputDir,
-    )
-}
-val javadocJar = tasks.create<Jar>("javadocJar") {
-    archiveClassifier.set("javadoc")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    dependsOn(deleteDokkaOutputDir, tasks.dokkaHtml)
-    from(dokkaOutputDir)
-}
-
 // Project code analysis
 // To analyze a project hierarchy, apply the SonarQube plugin to the root project of the hierarchy.
 // Typically (but not necessarily) this will be the root project of the Gradle build.
@@ -307,8 +316,24 @@ sonarqube {
             "sonar.projectKey",
             "${providers.gradleProperty("sonar.organization").get()}_${project.name}",
         )
+        property("sonar.coverage.jacoco.xmlReportPaths", providers.gradleProperty("sonar.coverage.jacoco.xml.report.paths").get())
         property("sonar.androidLint.reportPaths", providers.gradleProperty("sonar.android.lint.report.paths").get())
     }
+}
+
+// Project documentation
+val dokkaOutputDir = layout.buildDirectory.dir("dokka")
+tasks.dokkaHtml { outputDirectory.set(file(dokkaOutputDir)) }
+val deleteDokkaOutputDir by tasks.register<Delete>("deleteDokkaOutputDirectory") {
+    delete(
+        dokkaOutputDir,
+    )
+}
+val javadocJar = tasks.create<Jar>("javadocJar") {
+    archiveClassifier.set("javadoc")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn(deleteDokkaOutputDir, tasks.dokkaHtml)
+    from(dokkaOutputDir)
 }
 
 publishing {
@@ -411,3 +436,14 @@ mavenPublishing {
     // Enable GPG signing for all publications
     signAllPublications()
 }
+
+fun String.toJavaVersion() = JavaVersion.valueOf(
+    "VERSION_${
+        if (this.toDouble() < 10) {
+            this.replace(".", "_")
+        }
+        else {
+            this
+        }
+    }",
+)

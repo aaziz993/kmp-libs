@@ -24,7 +24,11 @@ publish-maven: # Publish to Maven Central
 publish: # Publish to Space Packages, Github Packages and Maven Central
 	./scripts/publish.sh
 
-test:
+test: # Run all tests
 	chmod 777 -R scripts/ && ./scripts/test.sh
+
+cover-report: # Generate code coverage report
+	chmod 777 -R scripts/ && ./scripts/test.sh
+
 clean: # Clean all
 	chmod 777 -R scripts/ && ./scripts/clean.sh

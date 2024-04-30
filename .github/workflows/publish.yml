@@ -61,13 +61,13 @@ jobs:
       - name: 🔬 Spotless code format check
         run: make format-check
 
+      - name: 🩺 Test and generate code coverage report with Kover
+        run: make test
+
       - name: 🔬 Sonar continuous inspection of code quality and security
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: make quality-check
-
-      - name: 🩺 Test
-        run: make test
 
       - name: Publish to Github Packages
         env:

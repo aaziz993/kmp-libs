@@ -63,20 +63,20 @@ job("Code format check, quality check, test and publish") {
 
     container("Spotless code format check", "{{ jetbrains.space.automation.env.os }}") {
         shellScript {
-            content = "apt install -y make && make format-check"
+            content = "make format-check"
+        }
+    }
+
+    container("Test and generate code coverage report with Kover", "{{ jetbrains.space.automation.env.os }}") {
+        shellScript {
+            content = "make test"
         }
     }
 
     container("Sonar continuous inspection of code quality and security", "{{ jetbrains.space.automation.env.os }}") {
         env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
         shellScript {
-            content = "apt install -y make && make quality-check"
-        }
-    }
-
-    container("Test", "{{ jetbrains.space.automation.env.os }}") {
-        shellScript {
-            content = "apt install -y make && make test"
+            content = "make quality-check"
         }
     }
 
