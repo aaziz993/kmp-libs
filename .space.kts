@@ -61,19 +61,19 @@ job("Code format check, quality check, test and publish") {
         }
     }
 
-    container("Spotless code format check", "{{ jetbrains.space.automation.env.os }}") {
+    container("Spotless code format check", "{{ jetbrains.space.automation.run.env }}") {
         shellScript {
             content = "make format-check"
         }
     }
 
-    container("Test and generate code coverage report with Kover", "{{ jetbrains.space.automation.env.os }}") {
+    container("Test and generate code coverage report with Kover", "{{ jetbrains.space.automation.run.env }}") {
         shellScript {
             content = "make test"
         }
     }
 
-    container("Sonar continuous inspection of code quality and security", "{{ jetbrains.space.automation.env.os }}") {
+    container("Sonar continuous inspection of code quality and security", "{{ jetbrains.space.automation.run.env }}") {
         env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
         shellScript {
             content = "make quality-check"
@@ -83,7 +83,7 @@ job("Code format check, quality check, test and publish") {
     parallel {
         container(
             "Publish to Space Packages",
-            "{{ jetbrains.space.automation.env.os }}",
+            "{{ jetbrains.space.automation.run.env }}",
         ) {
             // The only way to get a secret in a shell script is an env variable
             env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
@@ -99,7 +99,7 @@ job("Code format check, quality check, test and publish") {
 
         container(
             "Publish to Maven Central",
-            "{{ jetbrains.space.automation.env.os }}",
+            "{{ jetbrains.space.automation.run.env }}",
         ) {
             // The only way to get a secret in a shell script is an env variable
             env["SONATYPE_USERNAME"] = "{{ project:sonatype.username }}"
