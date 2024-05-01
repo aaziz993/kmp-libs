@@ -56,8 +56,10 @@ else {
     "releases"
 }
 
-val githubUsername: String = if (System.getenv().containsKey("GITHUB_USERNAME")) {
-    System.getenv("GITHUB_USERNAME")
+val versionInfixUppercase = versionInfix.uppercase()
+
+val githubUsername: String = if (System.getenv().containsKey("GITHUB_${versionInfixUppercase}_USERNAME")) {
+    System.getenv("GITHUB_${versionInfixUppercase}_USERNAME")
 }
 else {
     localProperties.getProperty("github.$versionInfix.username")
@@ -359,14 +361,14 @@ publishing {
 
             url = uri(providers.gradleProperty("jetbrains.space.packages.$versionInfix.url").get())
             credentials {
-                username = if (System.getenv().containsKey("JB_SPACE_USERNAME")) {
-                    System.getenv("JB_SPACE_USERNAME")
+                username = if (System.getenv().containsKey("JB_SPACE_${versionInfixUppercase}_USERNAME")) {
+                    System.getenv("JB_SPACE_${versionInfixUppercase}_USERNAME")
                 }
                 else {
                     localProperties.getProperty("jetbrains.space.$versionInfix.username")
                 }
-                password = if (System.getenv().containsKey("JB_SPACE_PASSWORD")) {
-                    System.getenv("JB_SPACE_PASSWORD")
+                password = if (System.getenv().containsKey("JB_SPACE_${versionInfixUppercase}_PASSWORD")) {
+                    System.getenv("JB_SPACE_${versionInfixUppercase}_PASSWORD")
                 }
                 else {
                     localProperties.getProperty("jetbrains.space.$versionInfix.password")
@@ -387,8 +389,8 @@ publishing {
             // Repository username and password
             credentials {
                 username = githubUsername
-                password = if (System.getenv().containsKey("GITHUB_PASSWORD")) {
-                    System.getenv("GITHUB_PASSWORD")
+                password = if (System.getenv().containsKey("GITHUB_${versionInfixUppercase}_PASSWORD")) {
+                    System.getenv("GITHUB_${versionInfixUppercase}_PASSWORD")
                 }
                 else {
                     localProperties.getProperty("github.$versionInfix.password")

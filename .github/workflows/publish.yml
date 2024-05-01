@@ -71,8 +71,10 @@ jobs:
 
       - name: Publish to Github Packages
         env:
-          GITHUB_USERNAME: ${{ github.actor }}
-          GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_RELEASE_USERNAME: ${{ github.actor }}
+          GITHUB_RELEASE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_SNAPSHOTS_USERNAME: ${{ github.actor }}
+          GITHUB_SNAPSHOTS_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           SINGING_GNUPG_KEY_ID: ${{ secrets.SINGING_GNUPG_KEY_ID }}
           SIGNING_GNUPG_KEY_PASSPHRASE: ${{ secrets.SIGNING_GNUPG_KEY_PASSPHRASE }}
           SINGING_GNUPG_KEY: ${{ secrets.SINGING_GNUPG_KEY }}

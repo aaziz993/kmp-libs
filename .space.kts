@@ -62,61 +62,60 @@ job("Code format check, quality check, test and publish") {
             }
         }
     }
-//
-//    container("Spotless code format check", "{{ jetbrains.space.automation.run.env }}") {
-//        shellScript {
-//            content = "make format-check"
-//        }
-//    }
-//
-//    container("Test and generate code coverage report with Kover", "{{ jetbrains.space.automation.run.env }}") {
-//        shellScript {
-//            content = "make test"
-//        }
-//    }
-//
-//    container("Sonar continuous inspection of code quality and security", "{{ jetbrains.space.automation.run.env }}") {
-//        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
-//        shellScript {
-//            content = "make quality-check"
-//        }
-//    }
+
+    container("Spotless code format check", "{{ jetbrains.space.automation.run.env }}") {
+        shellScript {
+            content = "make format-check"
+        }
+    }
+
+    container("Test and generate code coverage report with Kover", "{{ jetbrains.space.automation.run.env }}") {
+        shellScript {
+            content = "make test"
+        }
+    }
+
+    container("Sonar continuous inspection of code quality and security", "{{ jetbrains.space.automation.run.env }}") {
+        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
+        shellScript {
+            content = "make quality-check"
+        }
+    }
 
     parallel {
-//        container(
-//            "Publish to Space Packages",
-//            "{{ jetbrains.space.automation.run.env }}",
-//        ) {
-//            // The only way to get a secret in a shell script is an env variable
-//            env["JB_SPACE_USERNAME"] = System.getenv("JETBRAINS_SPACE_CLIENT_ID")
-//            env["JB_SPACE_PASSWORD"] = System.getenv("JETBRAINS_SPACE_CLIENT_SECRET")
-//            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
-//            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
-//            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
-//            shellScript {
-//                interpreter = "/bin/bash"
-//                content = " make publish-space"
-//            }
-//        }
+        container(
+            "Publish to Space Packages",
+            "{{ jetbrains.space.automation.run.env }}",
+        ) {
+            // The only way to get a secret in a shell script is an env variable
+            env["JB_SPACE_RELEASES_USERNAME"] = System.getenv("JETBRAINS_SPACE_CLIENT_ID")
+            env["JB_SPACE_RELEASES_PASSWORD"] = System.getenv("JETBRAINS_SPACE_CLIENT_SECRET")
+            env["JB_SPACE_SNAPSHOTS_USERNAME"] = System.getenv("JETBRAINS_SPACE_CLIENT_ID")
+            env["JB_SPACE_SNAPSHOTS_PASSWORD"] = System.getenv("JETBRAINS_SPACE_CLIENT_SECRET")
+            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
+            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
+            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
+            shellScript {
+                interpreter = "/bin/bash"
+                content = "make publish-space"
+            }
+        }
 
         container(
             "Publish to Maven Central",
             "{{ jetbrains.space.automation.run.env }}",
         ) {
             // The only way to get a secret in a shell script is an env variable
+            env["SONATYPE_RELEASES_USERNAME"]="{{ project:sonatype.releases.username }}"
+            env["SONATYPE_RELEASES_PASSWORD"]="{{ project:sonatype.releases.password }}"
+            env["SONATYPE_SNAPSHOTS_USERNAME"]="{{ project:sonatype.snapshots.username }}"
+            env["SONATYPE_SNAPSHOTS_PASSWORD"]="{{ project:sonatype.snapshots.password }}"
             env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
             env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
             env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
             shellScript {
                 interpreter = "/bin/bash"
-                content = """
-                    version_infix="${'$'}(
-                    [ "{{ project.version.snapshot }}" == "true" ] &&
-                        echo "snapshots" ||
-                        echo "releases"
-                    )"
-                    echo SONATYPE_USERNAME= "{{ project:sonatype."${'$'}version_infix".username }}"
-                """.trimIndent()
+                content = "make publish-maven"
             }
         }
     }

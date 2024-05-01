@@ -1,7 +1,7 @@
 #!/bin/bash
 
-. scripts/export-gpg-key.sh
-
 echo PUBLISHING TO SPACE PACKAGES...
+
+. scripts/export-gpg-key.sh
 
 ./gradlew publishAllPublicationsToSpacePackagesRepository --no-configuration-cache
