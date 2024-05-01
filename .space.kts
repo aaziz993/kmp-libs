@@ -46,22 +46,22 @@ job("Code format check, quality check, test and publish") {
         }
     }
 
-//    container("Read gradle.properties", "amazoncorretto:17-alpine") {
-//        kotlinScript { api ->
-//            // Do not use workDir to get the path to the working directory in a shellScript or kotlinScript.
-//            // Instead, use the JB_SPACE_WORK_DIR_PATH environment variable.
-//            File("${System.getenv("JB_SPACE_WORK_DIR_PATH")}/gradle.properties").let { file ->
-//                Properties().apply {
-//                    if (file.exists()) {
-//                        load(file.reader())
-//                    }
-//                }.entries.forEach {
-//                    println("${it.key}=${it.value}")
-//                    api.parameters[it.key.toString()] = it.value.toString()
-//                }
-//            }
-//        }
-//    }
+    container("Read gradle.properties", "amazoncorretto:17-alpine") {
+        kotlinScript { api ->
+            // Do not use workDir to get the path to the working directory in a shellScript or kotlinScript.
+            // Instead, use the JB_SPACE_WORK_DIR_PATH environment variable.
+            File("${System.getenv("JB_SPACE_WORK_DIR_PATH")}/gradle.properties").let { file ->
+                Properties().apply {
+                    if (file.exists()) {
+                        load(file.reader())
+                    }
+                }.entries.forEach {
+                    println("${it.key}=${it.value}")
+                    api.parameters[it.key.toString()] = it.value.toString()
+                }
+            }
+        }
+    }
 //
 //    container("Spotless code format check", "{{ jetbrains.space.automation.run.env }}") {
 //        shellScript {
