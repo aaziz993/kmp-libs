@@ -65,7 +65,13 @@ job("Code format check, quality check, test and publish") {
 
     container("Read gradle.properties", "amazoncorretto:17-alpine") {
         shellScript {
-            content = "echo {{ project.version.snapshot }}"
+            content = """
+                version_infix="$(
+                [ "{{ project.version.snapshot }}" == "true" ] &&
+                echo "snapshots" ||
+                echo "releases"
+                )
+            """.trimIndent()
         }
     }
 
