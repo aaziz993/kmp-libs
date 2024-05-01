@@ -71,6 +71,7 @@ job("Code format check, quality check, test and publish") {
                 echo "snapshots" ||
                 echo "releases"
                 )"
+                echo "${'$'}version_infix"
             """.trimIndent()
         }
     }
