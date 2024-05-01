@@ -64,10 +64,8 @@ job("Code format check, quality check, test and publish") {
     }
 
     container("Read gradle.properties", "amazoncorretto:17-alpine") {
-        val versionInfix = "{{ project.version.snapshot }}".toBoolean()
-        env["SONATYPE_PASSWORD"] = versionInfix.toString()
         shellScript {
-            content = "echo ${'$'}SONATYPE_PASSWORD"
+            content = "echo {{ project.version.snapshot }}"
         }
     }
 
