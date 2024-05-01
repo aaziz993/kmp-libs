@@ -74,7 +74,7 @@ allprojects {
     }.${
         providers.gradleProperty("project.version.patch").get()
     }${
-        if (providers.gradleProperty("github.actions.versioning.branch.name").get().toBoolean() &&
+        if (providers.gradleProperty("github.actions.versioning.ref.name").get().toBoolean() &&
             System.getenv()
                 .containsKey("GITHUB_REF_NAME")
         ) {
@@ -98,7 +98,7 @@ allprojects {
             ""
         }
     }${
-        if (providers.gradleProperty("jetbrains.space.automation.versioning.branch.name").get().toBoolean() &&
+        if (providers.gradleProperty("jetbrains.space.automation.versioning.ref.name").get().toBoolean() &&
             System.getenv()
                 .containsKey("JB_SPACE_GIT_BRANCH")
         ) {
