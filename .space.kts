@@ -115,7 +115,7 @@ job("Code format check, quality check, test and publish") {
                         echo "snapshots" ||
                         echo "releases"
                     )"
-
+                    echo SONATYPE_USERNAME= "{{ project:sonatype."${'$'}version_infix".username }}"
                 """.trimIndent()
             }
         }
