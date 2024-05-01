@@ -4,4 +4,5 @@
 
 echo PUBLISHING TO GITHUB PACKAGES...
 
-./gradlew publishAllPublicationsToGithubPackagesRepository --no-configuration-cache
+./gradlew publishAllPublicationsToGithubPackagesRepository --no-configuration-cache --stacktrace
+

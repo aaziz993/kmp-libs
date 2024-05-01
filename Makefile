@@ -1,4 +1,5 @@
-.PHONY: chmod-gradlew format format-check quality-check publish-github publish-space publish-maven clean
+.PHONY: chmod-gradlew format format-check quality-check gen-gpg-key publish-github publish-space publish-maven publish \
+test cover-report clean
 
 chmod-gradlew: # Give permission to execute gradlew
 	git update-index --chmod=+x gradlew
@@ -11,6 +12,9 @@ format-check: # Check code format with spotless
 
 quality-check: # Check code quality with sonar
 	chmod 777 -R scripts/ && ./scripts/quality-check.sh
+
+gen-gpg-key:
+	chmod 777 -R scripts/ && ./scripts/gen-gpg-key.sh
 
 publish-github: # Publish to Github Packages
 	chmod 777 -R scripts/ && ./scripts/publish-github.sh

@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.android.tools.build.bundletool.model.utils.Versions
 import com.diffplug.spotless.LineEnding
 import java.util.*
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.KoverXmlReportConfig
+import kotlinx.kover.gradle.plugin.dsl.MetricType
+import org.gradle.internal.os.OperatingSystem
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
 // Top-level build file where you can add configuration options common to all subprojects/modules.
@@ -32,13 +36,24 @@ plugins {
     alias(libs.plugins.vanniktech.maven.publish)
 }
 
+val os: OperatingSystem = OperatingSystem.current()
+
 val buildDirectoryName: String = layout.buildDirectory.asFile.get().name
+
+val versionSnapshot: Boolean = providers.gradleProperty("project.version.snapshot").get().toBoolean()
+
+val versionInfix = if (versionSnapshot) {
+    "snapshots"
+}
+else {
+    "releases"
+}
 
 val githubUsername: String = if (System.getenv().containsKey("GITHUB_USERNAME")) {
     System.getenv("GITHUB_USERNAME")
 }
 else {
-    providers.gradleProperty("github.username").get()
+    providers.gradleProperty("github.$versionInfix.username").get()
 }
 
 val localProperties: Properties = project.rootProject.file("local.properties").let { file ->
@@ -49,22 +64,22 @@ val localProperties: Properties = project.rootProject.file("local.properties").l
     }
 }
 
-val projectVersionSnapshotSuffix: String = providers.gradleProperty("project.version.snapshot.suffix").get()
-
 allprojects {
     group = providers.gradleProperty("project.group").get()
 
-    val projectVersion = providers.gradleProperty("project.version").get()
-
-    val projectVersionSuffix = "${
-        if (providers.gradleProperty("github.actions.versioning.ref.name").get().toBoolean() &&
+    version = "${
+        providers.gradleProperty("project.version.major").get()
+    }.${
+        providers.gradleProperty("project.version.minor").get()
+    }.${
+        providers.gradleProperty("project.version.patch").get()
+    }${
+        if (providers.gradleProperty("github.actions.versioning.branch.name").get().toBoolean() &&
             System.getenv()
-                .containsKey("GITHUB_RUN_NUMBER")
+                .containsKey("GITHUB_REF_NAME")
         ) {
-            // The GITHUB_RUN_NUMBER A unique number for each run of a particular workflow in a repository.
-            // This number begins at 1 for the workflow's first run, and increments with each new run.
-            // This number does not change if you re-run the workflow run.
-            ".${System.getenv("GITHUB_RUN_NUMBER")}"
+            // The GITHUB_REF_NAME provide the reference name.
+            "-${System.getenv("GITHUB_REF_NAME")}"
         }
         else {
             ""
@@ -72,10 +87,23 @@ allprojects {
     }${
         if (providers.gradleProperty("github.actions.versioning.run.number").get().toBoolean() &&
             System.getenv()
-                .containsKey("GITHUB_REF_NAME")
+                .containsKey("GITHUB_RUN_NUMBER")
+        ) {
+            // The GITHUB_RUN_NUMBER A unique number for each run of a particular workflow in a repository.
+            // This number begins at 1 for the workflow's first run, and increments with each new run.
+            // This number does not change if you re-run the workflow run.
+            "-${System.getenv("GITHUB_RUN_NUMBER")}"
+        }
+        else {
+            ""
+        }
+    }${
+        if (providers.gradleProperty("jetbrains.space.automation.versioning.branch.name").get().toBoolean() &&
+            System.getenv()
+                .containsKey("JB_SPACE_GIT_BRANCH")
         ) {
             // The GITHUB_REF_NAME provide the reference name.
-            ".${System.getenv("GITHUB_REF_NAME")}"
+            "-${System.getenv("JB_SPACE_GIT_BRANCH").substringAfterLast("/")}"
         }
         else {
             ""
@@ -85,19 +113,16 @@ allprojects {
             System.getenv()
                 .containsKey("JB_SPACE_EXECUTION_NUMBER")
         ) {
-            ".${System.getenv("JB_SPACE_EXECUTION_NUMBER")}"
+            "-${System.getenv("JB_SPACE_EXECUTION_NUMBER")}"
         }
         else {
             ""
         }
+    }${
+        providers.gradleProperty("project.version.suffix").get()
+    }${
+        if (versionSnapshot) "-SNAPSHOT" else ""
     }"
-
-    version = if (projectVersion.endsWith(projectVersionSnapshotSuffix, true)) {
-        "${projectVersion.removeSuffix(projectVersionSnapshotSuffix)}$projectVersionSuffix$projectVersionSnapshotSuffix"
-    }
-    else {
-        "$projectVersion$projectVersionSuffix"
-    }
 }
 
 subprojects {
@@ -176,15 +201,20 @@ buildConfig {
 koverReport {
     filters {
         excludes {
-            classes("com.baeldung.code.not.covered")
+
         }
     }
 
     verify {
         rule {
-            isEnabled = true
+            isEnabled = providers.gradleProperty("kover.verify.rule.min.value").get().toBoolean()
             bound {
-                minValue = 80 // Minimum coverage percentage
+                minValue = providers.gradleProperty("kover.verify.rule.min.value").orNull?.toInt()
+                maxValue = providers.gradleProperty("kover.verify.rule.max.value").orNull?.toInt()
+                metric = providers.gradleProperty("kover.verify.rule.metric")
+                    .orNull?.let { MetricType.valueOf(it.uppercase()) } ?: MetricType.LINE
+                aggregation = providers.gradleProperty("kover.verify.rule.aggregation")
+                    .orNull?.let { AggregationType.valueOf(it.uppercase()) } ?: AggregationType.COVERED_PERCENTAGE
             }
         }
     }
@@ -233,7 +263,7 @@ spotless {
         // Will add a newline character to the end of files content
         endWithNewline()
         // Specifies license header file
-        licenseHeaderFile(providers.gradleProperty("spotless.java.license.header.file"))
+        licenseHeaderFile(providers.gradleProperty("spotless.java.license.header.file").get())
     }
 
     // Configuration for Kotlin files
@@ -244,13 +274,13 @@ spotless {
         // Adds the ability to have spotless ignore specific portions of a project. The usage looks like the following
         toggleOffOn()
         // Use ktlint with version 1.2.1 and custom .editorconfig
-        ktlint("1.2.1").setEditorConfigPath(providers.gradleProperty("spotless.editor.config.file"))
+        ktlint("1.2.1").setEditorConfigPath(providers.gradleProperty("spotless.editor.config.file").get())
         // Will remove any extra whitespace at the end of lines
         trimTrailingWhitespace()
         // Will add a newline character to the end of files content
         endWithNewline()
         // Specifies license header file
-        licenseHeaderFile(providers.gradleProperty("spotless.kotlin.license.header.file"))
+        licenseHeaderFile(providers.gradleProperty("spotless.kotlin.license.header.file").get())
     }
 
     format("kts") {
@@ -264,7 +294,7 @@ spotless {
         // Will add a newline character to the end of files content
         endWithNewline()
         // Specifies license header file
-        licenseHeaderFile(providers.gradleProperty("spotless.kts.license.header.file"), "(^(?![\\/ ]\\*).*$)")
+        licenseHeaderFile(providers.gradleProperty("spotless.kts.license.header.file").get(), "(^(?![\\/ ]\\*).*$)")
     }
 
     format("xml") {
@@ -278,7 +308,7 @@ spotless {
         // Will add a newline character to the end of files content
         endWithNewline()
         // Specifies license header file
-        licenseHeaderFile(providers.gradleProperty("spotless.xml.license.header.file"), "(<[^!?])")
+        licenseHeaderFile(providers.gradleProperty("spotless.xml.license.header.file").get(), "(<[^!?])")
     }
 
     // Additional configuration for Kotlin Gradle scripts
@@ -338,44 +368,45 @@ val javadocJar = tasks.create<Jar>("javadocJar") {
 
 publishing {
     repositories {
+        // SPACE PACKAGES
         maven {
             name = "spacePackages"
-            url = uri(
-                if (version.toString().endsWith(projectVersionSnapshotSuffix)) {
-                    providers.gradleProperty("jetbrains.space.packages.snapshots.url")
-                }
-                else {
-                    providers.gradleProperty("jetbrains.space.packages.releases.url")
-                },
-            )
-            // environment variables
+
+            url = uri(providers.gradleProperty("jetbrains.space.packages.$versionInfix.url").get())
             credentials {
-                username = if (System.getenv().containsKey("JB_SPACE_CLIENT_ID")) {
-                    System.getenv("JB_SPACE_CLIENT_ID")
+                username = if (System.getenv().containsKey("JB_SPACE_USERNAME")) {
+                    System.getenv("JB_SPACE_USERNAME")
                 }
                 else {
-                    localProperties.getProperty("jetbrains.space.client.id")
+                    localProperties.getProperty("jetbrains.space.$versionInfix.username")
                 }
-                password = if (System.getenv().containsKey("JB_SPACE_CLIENT_SECRET")) {
-                    System.getenv("JB_SPACE_CLIENT_SECRET")
+                password = if (System.getenv().containsKey("JB_SPACE_PASSWORD")) {
+                    System.getenv("JB_SPACE_PASSWORD")
                 }
                 else {
-                    localProperties.getProperty("jetbrains.space.client.secret")
+                    localProperties.getProperty("jetbrains.space.$versionInfix.password")
                 }
             }
         }
 
+        // GITHUB PACKAGES
         maven {
             name = "githubPackages"
-            url = uri("${providers.gradleProperty("github.packages.url")}/$githubUsername/${rootProject.name}")
-            // environment variables
+
+            url = uri(
+                "${
+                    providers.gradleProperty("github.packages.$versionInfix.url").get()
+                }/${rootProject.name}",
+            )
+
+            // Repository username and password
             credentials {
                 username = githubUsername
                 password = if (System.getenv().containsKey("GITHUB_PASSWORD")) {
                     System.getenv("GITHUB_PASSWORD")
                 }
                 else {
-                    localProperties.getProperty("github.password")
+                    localProperties.getProperty("github.$versionInfix.password")
                 }
             }
         }
@@ -387,7 +418,7 @@ mavenPublishing {
 
     pom {
         name.set(rootProject.name.uppercaseFirstChar())
-        description.set(providers.gradleProperty("project.description"))
+        description.set(providers.gradleProperty("project.description").get())
         inceptionYear.set("2020")
         url.set("https://github.com/$githubUsername/${rootProject.name}")
 
@@ -425,12 +456,12 @@ mavenPublishing {
     }
 
     publishToMavenCentral(
-        when (providers.gradleProperty("sonatype.url").get()) {
+        when (providers.gradleProperty("sonatype.$versionInfix.url").get()) {
             "https://oss.sonatype.org" -> "DEFAULT"
             "https://s01.oss.sonatype.org" -> "S01"
             else -> "CENTRAL_PORTAL"
         },
-        providers.gradleProperty("sonatype.autorelease").get().toBoolean(),
+        providers.gradleProperty("sonatype.$versionInfix.autopush").get().toBoolean(),
     )
 
     // Enable GPG signing for all publications

@@ -45,74 +45,87 @@ job("Code format check, quality check, test and publish") {
     }
 
     container("Read gradle.properties", "amazoncorretto:17-alpine") {
-        kotlinScript { api ->
-            // Do not use workDir to get the path to the working directory in a shellScript or kotlinScript.
-            // Instead, use the JB_SPACE_WORK_DIR_PATH environment variable.
-            File("${System.getenv("JB_SPACE_WORK_DIR_PATH")}/gradle.properties").let { file ->
-                Properties().apply {
-                    if (file.exists()) {
-                        load(file.reader())
-                    }
-                }.entries.forEach {
-                    println("${it.key}=${it.value}")
-                    api.parameters[it.key.toString()] = it.value.toString()
-                }
-            }
-        }
-    }
-
-    container("Spotless code format check", "{{ jetbrains.space.automation.run.env }}") {
+        val password = "password"
+        env["SONATYPE_PASSWORD"] = "{{ project:sonatype.$password }}"
         shellScript {
-            content = "make format-check"
+            content = "echo ${'$'}SONATYPE_PASSWORD"
         }
     }
 
-    container("Test and generate code coverage report with Kover", "{{ jetbrains.space.automation.run.env }}") {
-        shellScript {
-            content = "make test"
-        }
-    }
-
-    container("Sonar continuous inspection of code quality and security", "{{ jetbrains.space.automation.run.env }}") {
-        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
-        shellScript {
-            content = "make quality-check"
-        }
-    }
-
-    parallel {
-        container(
-            "Publish to Space Packages",
-            "{{ jetbrains.space.automation.run.env }}",
-        ) {
-            // The only way to get a secret in a shell script is an env variable
-            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
-            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
-            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
-            shellScript {
-                interpreter = "/bin/bash"
-                content = """
-                    make publish-space
-                """
-            }
-        }
-
-        container(
-            "Publish to Maven Central",
-            "{{ jetbrains.space.automation.run.env }}",
-        ) {
-            // The only way to get a secret in a shell script is an env variable
-            env["SONATYPE_USERNAME"] = "{{ project:sonatype.username }}"
-            env["SONATYPE_PASSWORD"] = "{{ project:sonatype.password }}"
-            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
-            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
-            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
-            shellScript {
-                interpreter = "/bin/bash"
-                content = """
-                    make publish-maven
-                """
-            }
-        }
-    }
+//    container("Read gradle.properties", "amazoncorretto:17-alpine") {
+//        kotlinScript { api ->
+//            // Do not use workDir to get the path to the working directory in a shellScript or kotlinScript.
+//            // Instead, use the JB_SPACE_WORK_DIR_PATH environment variable.
+//            File("${System.getenv("JB_SPACE_WORK_DIR_PATH")}/gradle.properties").let { file ->
+//                Properties().apply {
+//                    if (file.exists()) {
+//                        load(file.reader())
+//                    }
+//                }.entries.forEach {
+//                    println("${it.key}=${it.value}")
+//                    api.parameters[it.key.toString()] = it.value.toString()
+//                }
+//            }
+//        }
+//    }
+//
+//    container("Spotless code format check", "{{ jetbrains.space.automation.run.env }}") {
+//        shellScript {
+//            content = "make format-check"
+//        }
+//    }
+//
+//    container("Test and generate code coverage report with Kover", "{{ jetbrains.space.automation.run.env }}") {
+//        shellScript {
+//            content = "make test"
+//        }
+//    }
+//
+//    container("Sonar continuous inspection of code quality and security", "{{ jetbrains.space.automation.run.env }}") {
+//        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
+//        shellScript {
+//            content = "make quality-check"
+//        }
+//    }
+//
+//    parallel {
+//        container(
+//            "Publish to Space Packages",
+//            "{{ jetbrains.space.automation.run.env }}",
+//        ) {
+//            // The only way to get a secret in a shell script is an env variable
+//            env["JB_SPACE_USERNAME"] = System.getenv("JETBRAINS_SPACE_CLIENT_ID")
+//            env["JB_SPACE_PASSWORD"] = System.getenv("JETBRAINS_SPACE_CLIENT_SECRET")
+//            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
+//            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
+//            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
+//            shellScript {
+//                interpreter = "/bin/bash"
+//                content = """
+//                    make publish-space
+//                """
+//            }
+//        }
+//
+//        container(
+//            "Publish to Maven Central",
+//            "{{ jetbrains.space.automation.run.env }}",
+//        ) {
+//            // The only way to get a secret in a shell script is an env variable
+//            env["SINGING_GNUPG_KEY_ID"] = "{{ project:signing.gnupg.key.id }}"
+//            env["SIGNING_GNUPG_KEY_PASSPHRASE"] = "{{ project:signing.gnupg.key.passphrase }}"
+//            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
+//            shellScript {
+//                interpreter = "/bin/bash"
+//                content = """
+//                    version_infix="$( [ "{{ project.version.snapshot }}" == "true" ] && echo snapshots || echo releases)"
+//                    export SONATYPE_USERNAME
+//                    export SONATYPE_PASSWORD
+//                    SONATYPE_USERNAME={{ project:sonatype.snapshots.username }}
+//                    SONATYPE_PASSWORD={{ project:sonatype.$.password }}
+//                    make publish-maven
+//                """
+//            }
+//        }
+//    }
 }
