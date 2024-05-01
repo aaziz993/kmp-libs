@@ -70,7 +70,7 @@ job("Code format check, quality check, test and publish") {
                 [ "{{ project.version.snapshot }}" == "true" ] &&
                 echo "snapshots" ||
                 echo "releases"
-                )
+                )"
             """.trimIndent()
         }
     }
