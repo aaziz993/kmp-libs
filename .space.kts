@@ -115,12 +115,7 @@ job("Code format check, quality check, test and publish") {
                         echo "snapshots" ||
                         echo "releases"
                     )"
-                    export SONATYPE_USERNAME
-                    export SONATYPE_PASSWORD
-                    SONATYPE_USERNAME={{ project:sonatype."${'$'}version_infix".username }}
-                    SONATYPE_PASSWORD={{ project:sonatype."${'$'}version_infix".password }}
-                    echo "SONATYPE_USERNAME=${'$'}SONATYPE_USERNAME"
-                    echo "SONATYPE_PASSWORD=${'$'}SONATYPE_PASSWORD"
+
                 """.trimIndent()
             }
         }
