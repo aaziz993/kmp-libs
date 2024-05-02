@@ -50,8 +50,7 @@ val versionSnapshot: Boolean = providers.gradleProperty("project.version.snapsho
 
 val versionInfix = if (versionSnapshot) {
     "snapshots"
-}
-else {
+} else {
     "releases"
 }
 
@@ -59,8 +58,7 @@ val versionInfixUppercase = versionInfix.uppercase()
 
 val githubUsername: String = if (System.getenv().containsKey("GITHUB_${versionInfixUppercase}_USERNAME")) {
     System.getenv("GITHUB_${versionInfixUppercase}_USERNAME")
-}
-else {
+} else {
     localProperties.getProperty("github.$versionInfix.username")
 }
 
@@ -81,8 +79,7 @@ allprojects {
         ) {
             // The GITHUB_REF_NAME provide the reference name.
             "-${System.getenv("GITHUB_REF_NAME")}"
-        }
-        else {
+        } else {
             ""
         }
     }${
@@ -95,8 +92,7 @@ allprojects {
             // This number begins at 1 for the workflow's first run, and increments with each new run.
             // This number does not change if you re-run the workflow run.
             "-${System.getenv("GITHUB_RUN_NUMBER")}"
-        }
-        else {
+        } else {
             ""
         }
     }${
@@ -107,8 +103,7 @@ allprojects {
         ) {
             // The JB_SPACE_GIT_BRANCH provide the reference  as "refs/heads/repository_name".
             "-${System.getenv("JB_SPACE_GIT_BRANCH").substringAfterLast("/")}"
-        }
-        else {
+        } else {
             ""
         }
     }${
@@ -118,16 +113,14 @@ allprojects {
             System.getenv().containsKey("JB_SPACE_EXECUTION_NUMBER")
         ) {
             "-${System.getenv("JB_SPACE_EXECUTION_NUMBER")}"
-        }
-        else {
+        } else {
             ""
         }
     }${
         providers.gradleProperty("project.version.suffix").get().let {
             if (it.isEmpty()) {
                 ""
-            }
-            else {
+            } else {
                 "-$it"
             }
         }
@@ -395,14 +388,12 @@ publishing {
             credentials {
                 username = if (System.getenv().containsKey("JB_SPACE_${versionInfixUppercase}_USERNAME")) {
                     System.getenv("JB_SPACE_${versionInfixUppercase}_USERNAME")
-                }
-                else {
+                } else {
                     localProperties.getProperty("jetbrains.space.$versionInfix.username")
                 }
                 password = if (System.getenv().containsKey("JB_SPACE_${versionInfixUppercase}_PASSWORD")) {
                     System.getenv("JB_SPACE_${versionInfixUppercase}_PASSWORD")
-                }
-                else {
+                } else {
                     localProperties.getProperty("jetbrains.space.$versionInfix.password")
                 }
             }
@@ -423,8 +414,7 @@ publishing {
                 username = githubUsername
                 password = if (System.getenv().containsKey("GITHUB_${versionInfixUppercase}_PASSWORD")) {
                     System.getenv("GITHUB_${versionInfixUppercase}_PASSWORD")
-                }
-                else {
+                } else {
                     localProperties.getProperty("github.$versionInfix.password")
                 }
             }
@@ -491,8 +481,7 @@ fun String.toJavaVersion() = JavaVersion.valueOf(
     "VERSION_${
         if (this.toDouble() < 10) {
             this.replace(".", "_")
-        }
-        else {
+        } else {
             this
         }
     }",

@@ -1,43 +1,43 @@
 .PHONY: chmod-gradlew format format-check test cover-report quality-check checkup gen-gpg-key clean-gpg-keys \
 publish-github publish-space publish-maven publish clean
 
-chmod-gradlew: # Give permission to execute gradlew
+chmod-gradlew: # Give permission to execute gradlew.
 	git update-index --chmod=+x gradlew
 
-format: # Format code with spotless
+format: # Format code with spotless.
 	chmod 777 -R scripts/ && ./scripts/format.sh
 
-format-check: # Check code format with spotless
+format-check: # Check code format with spotless.
 	chmod 777 -R scripts/ && ./scripts/format.sh
 
-test: # Run all tests
+test: # Run all tests.
 	chmod 777 -R scripts/ && ./scripts/test.sh
 
-cover-report: # Generate code coverage report
+cover-report: # Generate code coverage report.
 	chmod 777 -R scripts/ && ./scripts/test.sh
 
-quality-check: # Check code quality with sonar
+quality-check: # Check code quality with sonar.
 	chmod 777 -R scripts/ && ./scripts/quality-check.sh
 
-checkup: format test quality-check  # Code format, test and quality check
+checkup: format test quality-check  # Code format, test and quality check.
 
-gen-gpg-key: # Generate gpg key
+gen-gpg-key: # Generate gpg key.
 	chmod 777 -R scripts/ && ./scripts/gen-gpg-key.sh
 
-clean-gpg-keys: # Clean all gpg keys
+clean-gpg-keys: # Clean all gpg keys.
 	chmod 777 -R scripts/ && ./scripts/clean-gpg-keys.sh
 
-publish-github: checkup # Publish to Github Packages
-	chmod 777 -R scripts/ && ./scripts/publish-github.sh
+publish-github-packages: checkup # Publish to Github Packages.
+	chmod 777 -R scripts/ && ./scripts/publish-github-packages.sh
 
-publish-space: checkup # Publish to Space Packages
-	chmod 777 -R scripts/ && ./scripts/publish-space.sh
+publish-space-packages: checkup # Publish to Space Packages.
+	chmod 777 -R scripts/ && ./scripts/publish-space-packages.sh
 
-publish-maven: checkup # Publish to Maven Central
+publish-maven: checkup # Publish to Maven.
 	chmod 777 -R scripts/ && ./scripts/publish-maven.sh
 
-publish: checkup # Publish to Space Packages, Github Packages and Maven Central
+publish: checkup # Publish to Space Packages, Github Packages and Maven.
 	chmod 777 -R scripts/ && ./scripts/publish-github.sh && ./scripts/publish-space.sh && ./scripts/publish-maven.sh
 
-clean: # Clean all
+clean: # Clean all.
 	chmod 777 -R scripts/ && ./scripts/clean.sh

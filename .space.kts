@@ -15,25 +15,6 @@
  */
 import java.io.File
 import java.util.*
-import kotlin.io.path.fileVisitor
-import space.jetbrains.api.runtime.resources.projects.Params
-import space.jetbrains.api.runtime.resources.projects.automation.stepExecutions.usedParameters.Param
-
-/*
- * Copyright 2024 Aziz Atoev
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 job("Code format check, quality check, test and publish") {
     startOn {
@@ -47,9 +28,7 @@ job("Code format check, quality check, test and publish") {
         }
     }
 
-    var enable = false
-
-    container("Read gradle.properties", "amazoncorretto:17-alpine") {
+    container("\uD83D\uDC40 Read gradle.properties", "amazoncorretto:17-alpine") {
         kotlinScript { api ->
             // Do not use workDir to get the path to the working directory in a shellScript or kotlinScript.
             // Instead, use the JB_SPACE_WORK_DIR_PATH environment variable.
@@ -63,23 +42,29 @@ job("Code format check, quality check, test and publish") {
                     api.parameters[it.key.toString()] = it.value.toString()
                 }
             }
-            enable = api.parameters["jetbrains.space.automation.enable"].toBoolean()
         }
     }
 
 
-    container("Spotless code format check", "{{ jetbrains.space.automation.run.env }}") {
-        println("ENABLED: $enable")
+//    container("Spotless code format check", "{{ jetbrains.space.automation.run.env }}") {
 //        shellScript {
 //            interpreter = "/bin/bash"
-//            location = "./scripts/format-check.sh"
+//            location = """
+//                if [[ "{{ jetbrains.space.automation.format.check.enable }}" == "true" ]; then
+//                    ./scripts/format-check.sh
+//                fi
+//            """.trimIndent()
 //        }
-    }
+//    }
 //
 //    container("Test and generate code coverage report with Kover", "{{ jetbrains.space.automation.run.env }}") {
 //        shellScript {
 //            interpreter = "/bin/bash"
-//            location = "./scripts/test.sh"
+//            location = """
+//                if [[ "{{ jetbrains.space.automation.test.enable }}" == "true" ]; then
+//                    ./scripts/test.sh
+//                fi
+//            """.trimIndent()
 //        }
 //    }
 //
@@ -87,7 +72,11 @@ job("Code format check, quality check, test and publish") {
 //        env["SONAR_TOKEN"] = "{{ project:sonar.token }}"
 //        shellScript {
 //            interpreter = "/bin/bash"
-//            content = "./scripts/quality-check.sh"
+//            content = """
+//                if [[ "{{ jetbrains.space.automation.quality.check.enable }}" == "true" ]; then
+//                    ./scripts/quality-check.sh
+//                fi
+//            """.trimIndent()
 //        }
 //    }
 //
@@ -106,7 +95,11 @@ job("Code format check, quality check, test and publish") {
 //            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
 //            shellScript {
 //                interpreter = "/bin/bash"
-//                location = "./scripts/publish-space.sh"
+//                location = """
+//                     if [[ "{{ jetbrains.space.automation.publish.space.packages.enable }}" == "true" ]; then
+//                        ./scripts/publish-space-packages.sh
+//                     fi
+//                """.trimIndent()
 //            }
 //        }
 //
@@ -124,7 +117,11 @@ job("Code format check, quality check, test and publish") {
 //            env["SINGING_GNUPG_KEY"] = "{{ project:signing.gnupg.key }}"
 //            shellScript {
 //                interpreter = "/bin/bash"
-//                location = "./scripts/publish-maven.sh"
+//                location = """
+//                    if [[ "{{ jetbrains.space.automation.publish.maven.enable }}" == "true" ]; then
+//                        ./scripts/publish-maven.sh
+//                    fi
+//                """.trimIndent()
 //            }
 //        }
 //    }

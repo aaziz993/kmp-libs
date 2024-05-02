@@ -1,14 +1,4 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
-
-# https://gist.github.com/aileen-r/f74e680fb47ebc8b29a9f1cc452a5da9
-
-# This is a basic workflow to help you get started with Actions
-
+# This workflow will build a Kotlin Multiplatform project with Gradle and cache/restore any dependencies to improve the workflow execution time
 name: Code format check, quality check, test and publish
 
 # Controls when the workflow will run
@@ -42,6 +32,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
+          cache: 'gradle'
 
       - name: 👀 Read gradle.properties
         uses: BrycensRanch/read-properties-action@v1.0.3
@@ -50,7 +41,7 @@ jobs:
           file: gradle.properties
           all: true
 
-      - name: gradle.properties are':'
+      - name: 'Properties gradle.properties are:'
         env:
           GRADLE_PROPERTIES: ${{ toJson(steps.gradle-properties.outputs) }}
         run: echo "$GRADLE_PROPERTIES"
@@ -59,15 +50,24 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: 🔬 Spotless code format check
-        run: ./scripts/format-check.sh
+        run: |
+          if [[ "{{ github.actions.format.check.enable }}" == "true" ]; then
+            ./scripts/format-check.sh
+          fi
 
       - name: 🩺 Test and generate code coverage report with Kover
-        run: ./scripts/test.sh
+        run: |
+          if [[ "{{ github.actions.test.enable }}" == "true" ]; then
+            ./scripts/test.sh
+          fi
 
       - name: 🔬 Sonar continuous inspection of code quality and security
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./scripts/quality-check.sh
+        run: |
+          if [[ "{{ github.actions.quality.check.enable }}" == "true" ]; then
+            ./scripts/quality-check.sh
+          fi
 
       - name: Publish to Github Packages
         env:
@@ -78,4 +78,7 @@ jobs:
           SINGING_GNUPG_KEY_ID: ${{ secrets.SINGING_GNUPG_KEY_ID }}
           SIGNING_GNUPG_KEY_PASSPHRASE: ${{ secrets.SIGNING_GNUPG_KEY_PASSPHRASE }}
           SINGING_GNUPG_KEY: ${{ secrets.SINGING_GNUPG_KEY }}
-        run: ./scripts/publish-github.sh
+        run: |
+          if [[ "{{ github.actions.publish.github.packages.enable }}" == "true" ]; then
+            ./scripts/publish-github-packages.sh
+          fi
