@@ -67,14 +67,14 @@ job("Code format check, quality check, test and publish") {
         }
     }
 
-    println("ENABLED: $enable")
-//
-//    container("Spotless code format check", "{{ jetbrains.space.automation.run.env }}") {
+
+    container("Spotless code format check", "{{ jetbrains.space.automation.run.env }}") {
+        println("ENABLED: $enable")
 //        shellScript {
 //            interpreter = "/bin/bash"
 //            location = "./scripts/format-check.sh"
 //        }
-//    }
+    }
 //
 //    container("Test and generate code coverage report with Kover", "{{ jetbrains.space.automation.run.env }}") {
 //        shellScript {
