@@ -59,15 +59,15 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: 🔬 Spotless code format check
-        run: make format-check
+        run: ./scripts/format-check.sh
 
       - name: 🩺 Test and generate code coverage report with Kover
-        run: make test
+        run: ./scripts/test.sh
 
       - name: 🔬 Sonar continuous inspection of code quality and security
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: make quality-check
+        run: ./scripts/quality-check.sh
 
       - name: Publish to Github Packages
         env:
@@ -78,4 +78,4 @@ jobs:
           SINGING_GNUPG_KEY_ID: ${{ secrets.SINGING_GNUPG_KEY_ID }}
           SIGNING_GNUPG_KEY_PASSPHRASE: ${{ secrets.SIGNING_GNUPG_KEY_PASSPHRASE }}
           SINGING_GNUPG_KEY: ${{ secrets.SINGING_GNUPG_KEY }}
-        run: make publish-github
+        run: ./scripts/publish-github.sh

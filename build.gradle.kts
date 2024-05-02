@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.android.tools.build.bundletool.model.utils.Versions
 import com.diffplug.spotless.LineEnding
 import java.util.*
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
-import kotlinx.kover.gradle.plugin.dsl.KoverXmlReportConfig
 import kotlinx.kover.gradle.plugin.dsl.MetricType
 import org.gradle.internal.os.OperatingSystem
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
 // Top-level build file where you can add configuration options common to all subprojects/modules.
-@Suppress("DSL_SCOPE_VIOLATION") plugins {
+@Suppress("DSL_SCOPE_VIOLATION")
+plugins {
     kotlin("multiplatform")
     id("com.android.library")
     alias(libs.plugins.build.config)
@@ -75,7 +74,11 @@ allprojects {
     }.${
         providers.gradleProperty("project.version.patch").get()
     }${
-        if (providers.gradleProperty("github.actions.versioning.ref.name").get().toBoolean() && System.getenv().containsKey("GITHUB_REF_NAME")) {
+        if (providers.gradleProperty(
+                "github.actions.versioning.ref.name",
+            ).get().toBoolean() &&
+            System.getenv().containsKey("GITHUB_REF_NAME")
+        ) {
             // The GITHUB_REF_NAME provide the reference name.
             "-${System.getenv("GITHUB_REF_NAME")}"
         }
@@ -83,7 +86,11 @@ allprojects {
             ""
         }
     }${
-        if (providers.gradleProperty("github.actions.versioning.run.number").get().toBoolean() && System.getenv().containsKey("GITHUB_RUN_NUMBER")) {
+        if (providers.gradleProperty(
+                "github.actions.versioning.run.number",
+            ).get().toBoolean() &&
+            System.getenv().containsKey("GITHUB_RUN_NUMBER")
+        ) {
             // The GITHUB_RUN_NUMBER A unique number for each run of a particular workflow in a repository.
             // This number begins at 1 for the workflow's first run, and increments with each new run.
             // This number does not change if you re-run the workflow run.
@@ -93,7 +100,11 @@ allprojects {
             ""
         }
     }${
-        if (providers.gradleProperty("jetbrains.space.automation.versioning.ref.name").get().toBoolean() && System.getenv().containsKey("JB_SPACE_GIT_BRANCH")) {
+        if (providers.gradleProperty(
+                "jetbrains.space.automation.versioning.ref.name",
+            ).get().toBoolean() &&
+            System.getenv().containsKey("JB_SPACE_GIT_BRANCH")
+        ) {
             // The JB_SPACE_GIT_BRANCH provide the reference  as "refs/heads/repository_name".
             "-${System.getenv("JB_SPACE_GIT_BRANCH").substringAfterLast("/")}"
         }
@@ -101,14 +112,25 @@ allprojects {
             ""
         }
     }${
-        if (providers.gradleProperty("jetbrains.space.automation.versioning.run.number").get().toBoolean() && System.getenv().containsKey("JB_SPACE_EXECUTION_NUMBER")) {
+        if (providers.gradleProperty(
+                "jetbrains.space.automation.versioning.run.number",
+            ).get().toBoolean() &&
+            System.getenv().containsKey("JB_SPACE_EXECUTION_NUMBER")
+        ) {
             "-${System.getenv("JB_SPACE_EXECUTION_NUMBER")}"
         }
         else {
             ""
         }
     }${
-        providers.gradleProperty("project.version.suffix").get()
+        providers.gradleProperty("project.version.suffix").get().let {
+            if (it.isEmpty()) {
+                ""
+            }
+            else {
+                "-$it"
+            }
+        }
     }${
         if (versionSnapshot) "-SNAPSHOT" else ""
     }"
@@ -140,8 +162,10 @@ android {
         consumerProguardFiles("proguard/consumer-rules.pro")
     }
     compileOptions {
-        sourceCompatibility = providers.gradleProperty("android.compile.options.source.compatibility").get().toJavaVersion()
-        targetCompatibility = providers.gradleProperty("android.compile.options.target.compatibility").get().toJavaVersion()
+        sourceCompatibility =
+            providers.gradleProperty("android.compile.options.source.compatibility").get().toJavaVersion()
+        targetCompatibility =
+            providers.gradleProperty("android.compile.options.target.compatibility").get().toJavaVersion()
     }
     buildTypes {
         release {
@@ -188,7 +212,6 @@ buildConfig {
 koverReport {
     filters {
         excludes {
-
         }
     }
 
@@ -198,10 +221,16 @@ koverReport {
             bound {
                 minValue = providers.gradleProperty("kover.verify.rule.min.value").orNull?.toInt()
                 maxValue = providers.gradleProperty("kover.verify.rule.max.value").orNull?.toInt()
-                metric = providers.gradleProperty("kover.verify.rule.metric").orNull?.let { MetricType.valueOf(it.uppercase()) }
-                    ?: MetricType.LINE
-                aggregation = providers.gradleProperty("kover.verify.rule.aggregation").orNull?.let { AggregationType.valueOf(it.uppercase()) }
-                    ?: AggregationType.COVERED_PERCENTAGE
+                metric =
+                    providers.gradleProperty("kover.verify.rule.metric").orNull?.let {
+                        MetricType.valueOf(it.uppercase())
+                    }
+                        ?: MetricType.LINE
+                aggregation =
+                    providers.gradleProperty("kover.verify.rule.aggregation").orNull?.let {
+                        AggregationType.valueOf(it.uppercase())
+                    }
+                        ?: AggregationType.COVERED_PERCENTAGE
             }
         }
     }
@@ -333,7 +362,10 @@ sonarqube {
             "sonar.projectKey",
             "${providers.gradleProperty("sonar.organization").get()}_${project.name}",
         )
-        property("sonar.coverage.jacoco.xmlReportPaths", providers.gradleProperty("sonar.coverage.jacoco.xml.report.paths").get())
+        property(
+            "sonar.coverage.jacoco.xmlReportPaths",
+            providers.gradleProperty("sonar.coverage.jacoco.xml.report.paths").get(),
+        )
         property("sonar.androidLint.reportPaths", providers.gradleProperty("sonar.android.lint.report.paths").get())
     }
 }

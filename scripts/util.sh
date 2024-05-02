@@ -1,7 +1,8 @@
 #!/bin/bash
 
 function property {
-    grep "${1}" "${2}" | cut -d'=' -f2
+    key_value=$(grep "^${1}=.*$" "${2}")
+    echo "${key_value#*=}"
 }
 
 function gpg_long_key_id() {

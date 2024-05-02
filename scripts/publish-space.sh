@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo PUBLISHING TO SPACE PACKAGES...
+echo Publish to Space Packages
 
 . scripts/export-gpg-key.sh
 

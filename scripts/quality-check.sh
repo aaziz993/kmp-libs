@@ -1,6 +1,8 @@
 #!/bin/bash
 
-. ./scripts/util.sh
+echo Sonar continuous inspection of code quality and security
+
+. scripts/util.sh
 
 local_properties_file="local.properties"
 

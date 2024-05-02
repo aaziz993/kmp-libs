@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo PUBLISHING TO MAVEN...
+echo Publish to Maven Central
 
 . scripts/util.sh
 

@@ -1,8 +1,7 @@
 #!/bin/bash
 
-echo PUBLISHING TO GITHUB PACKAGES...
+echo Publish to Github Packages
 
 . scripts/export-gpg-key.sh
 
-./gradlew publishAllPublicationsToGithubPackagesRepository --no-configuration-cache --stacktrace
-
+./gradlew publishAllPublicationsToGithubPackagesRepository --no-configuration-cache
