@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import com.android.build.gradle.internal.cxx.logging.warnln
-import com.diffplug.gradle.spotless.FormatExtension
 import com.diffplug.gradle.spotless.SpotlessApply
 import com.diffplug.spotless.LineEnding
 import java.io.IOException
@@ -26,7 +25,8 @@ import org.gradle.internal.os.OperatingSystem
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
 // Top-level build file where you can add configuration options common to all subprojects/modules.
-@Suppress("DSL_SCOPE_VIOLATION") plugins {
+@Suppress("DSL_SCOPE_VIOLATION")
+plugins {
     kotlin("multiplatform")
     id("com.android.library")
     alias(libs.plugins.build.config)
@@ -57,8 +57,7 @@ val projectVersionSnapshot: Boolean = providers.gradleProperty("project.version.
 
 val projectVersionInfix = if (projectVersionSnapshot) {
     "snapshots"
-}
-else {
+} else {
     "releases"
 }
 
@@ -71,8 +70,7 @@ val projectLicenseTextUrl: String = providers.gradleProperty("project.license.te
 
 val githubUsername: String = if (System.getenv().containsKey("GITHUB_${projectVersionInfixUppercase}_USERNAME")) {
     System.getenv("GITHUB_${projectVersionInfixUppercase}_USERNAME")
-}
-else {
+} else {
     localProperties.getProperty("github.$projectVersionInfix.username")
 }
 
@@ -88,50 +86,53 @@ allprojects {
     }${
         if (providers.gradleProperty(
                 "github.actions.versioning.ref.name",
-            ).get().toBoolean() && System.getenv().containsKey("GITHUB_REF_NAME")) {
+            ).get().toBoolean() &&
+            System.getenv().containsKey("GITHUB_REF_NAME")
+        ) {
             // The GITHUB_REF_NAME provide the reference name.
             "-${System.getenv("GITHUB_REF_NAME")}"
-        }
-        else {
+        } else {
             ""
         }
     }${
         if (providers.gradleProperty(
                 "github.actions.versioning.run.number",
-            ).get().toBoolean() && System.getenv().containsKey("GITHUB_RUN_NUMBER")) {
+            ).get().toBoolean() &&
+            System.getenv().containsKey("GITHUB_RUN_NUMBER")
+        ) {
             // The GITHUB_RUN_NUMBER A unique number for each run of a particular workflow in a repository.
             // This number begins at 1 for the workflow's first run, and increments with each new run.
             // This number does not change if you re-run the workflow run.
             "-${System.getenv("GITHUB_RUN_NUMBER")}"
-        }
-        else {
+        } else {
             ""
         }
     }${
         if (providers.gradleProperty(
                 "jetbrains.space.automation.versioning.ref.name",
-            ).get().toBoolean() && System.getenv().containsKey("JB_SPACE_GIT_BRANCH")) {
+            ).get().toBoolean() &&
+            System.getenv().containsKey("JB_SPACE_GIT_BRANCH")
+        ) {
             // The JB_SPACE_GIT_BRANCH provide the reference  as "refs/heads/repository_name".
             "-${System.getenv("JB_SPACE_GIT_BRANCH").substringAfterLast("/")}"
-        }
-        else {
+        } else {
             ""
         }
     }${
         if (providers.gradleProperty(
                 "jetbrains.space.automation.versioning.run.number",
-            ).get().toBoolean() && System.getenv().containsKey("JB_SPACE_EXECUTION_NUMBER")) {
+            ).get().toBoolean() &&
+            System.getenv().containsKey("JB_SPACE_EXECUTION_NUMBER")
+        ) {
             "-${System.getenv("JB_SPACE_EXECUTION_NUMBER")}"
-        }
-        else {
+        } else {
             ""
         }
     }${
         providers.gradleProperty("project.version.suffix").get().let {
             if (it.isEmpty()) {
                 ""
-            }
-            else {
+            } else {
                 "-$it"
             }
         }
@@ -166,8 +167,10 @@ android {
         consumerProguardFiles("proguard/consumer-rules.pro")
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(providers.gradleProperty("android.compile.options.source.compatibility").get())
-        targetCompatibility = JavaVersion.toVersion(providers.gradleProperty("android.compile.options.target.compatibility").get())
+        sourceCompatibility =
+            JavaVersion.toVersion(providers.gradleProperty("android.compile.options.source.compatibility").get())
+        targetCompatibility =
+            JavaVersion.toVersion(providers.gradleProperty("android.compile.options.target.compatibility").get())
     }
     buildTypes {
         release {
@@ -276,30 +279,59 @@ tasks.clean {
     delete.add(buildDirectoryName)
 }
 
+enum class ProjectFileOverrideType {
+    NEVER,
+    ALWAYS,
+    IF_DIFFERENCE,
+}
+
 tasks.create("preparation", Task::class) {
-    // Download and write to file license
-    try {
-        File("LICENSE").writeText(URL(projectLicenseTextUrl).readText())
-    }
-    catch (e: IOException) {
-        val projectLicenseFallbackFile = providers.gradleProperty("project.license.fallback.file").get()
-        warnln(
-            "Cannot retrieve license from \"$projectLicenseTextUrl\" fallback to file \"$projectLicenseFallbackFile\"",
-        )
-        File(projectLicenseFallbackFile)
-            .copyTo(
-                File("LICENSE"),
-                providers.gradleProperty("project.license.override").get().toBoolean(),
+    fun downloadProjectFile(
+        destFile: String,
+        url: String,
+        fallbackFile: String,
+        overrideType: ProjectFileOverrideType,
+    ) {
+        val text = try {
+            URL(url).readText()
+        } catch (e: IOException) {
+            val file = File(fallbackFile)
+            warnln(
+                "Cannot retrieve ${file.nameWithoutExtension} from \"$url\" fallback to file \"$fallbackFile\"",
             )
+            file.readText()
+        }
+        val file = File(destFile)
+        if (file.exists()) {
+            if (overrideType == ProjectFileOverrideType.NEVER) {
+                return
+            }
+            if (overrideType == ProjectFileOverrideType.IF_DIFFERENCE) {
+                file.writeText(text)
+            }
+        }
+        file.writeText(text)
     }
 
-    // Download and write to file code of conduct
-    File("CODE_OF_CONDUCT.md").writeText(
-        URL(providers.gradleProperty("project.code.of.conduct.url").get()).readText().replace(
-            providers.gradleProperty("project.code.of.conduct.email.placeholder").get(),
-            """
-            [$developerName](mailto:$developerEmail?subject=[Code of Coduct])
-            """.trimIndent(),
+    // Download and write to file license
+    downloadProjectFile(
+        "LICENSE",
+        providers.gradleProperty("project.license.text.url").get(),
+        providers.gradleProperty("project.license.file.fallback.file").get(),
+        ProjectFileOverrideType.valueOf(
+            providers.gradleProperty("project.license.file.override")
+                .get().uppercase(),
+        ),
+    )
+
+    // Download or fallback to file and write to file code of conduct
+    downloadProjectFile(
+        "CODE_OF_CONDUCT.md",
+        providers.gradleProperty("project.code.of.conduct.md.url").get(),
+        providers.gradleProperty("project.code.of.conduct.file.fallback.file").get(),
+        ProjectFileOverrideType.valueOf(
+            providers.gradleProperty("project.code.of.conduct.file.override")
+                .get().uppercase(),
         ),
     )
 }
@@ -413,6 +445,11 @@ spotless {
             projectYamlFilesLicenseHeaderText("project.yaml.files.license.header.text.file"),
             providers.gradleProperty("project.yaml.files.license.header.text.delimiter").get(),
         ),
+        "properties" to Triple(
+            listOf("properties"),
+            projectYamlFilesLicenseHeaderText("project.properties.files.license.header.text.file"),
+            providers.gradleProperty("project.properties.files.license.header.text.delimiter").get(),
+        ),
         "html" to Triple(
             listOf("html"),
             projectHtmlFilesLicenseHeaderText("project.html.files.license.header.text.file"),
@@ -443,7 +480,9 @@ spotless {
             // The usage looks like the following
             toggleOffOn()
             // Will remove any extra whitespace at the beginning of lines
-//            indentWithSpaces()
+            if (entry.key == "properties") {
+                indentWithSpaces()
+            }
             // Will remove any extra whitespace at the end of lines
             trimTrailingWhitespace()
             // Will add a newline character to the end of files content
@@ -511,14 +550,12 @@ publishing {
             credentials {
                 username = if (System.getenv().containsKey("JB_SPACE_${projectVersionInfixUppercase}_USERNAME")) {
                     System.getenv("JB_SPACE_${projectVersionInfixUppercase}_USERNAME")
-                }
-                else {
+                } else {
                     localProperties.getProperty("jetbrains.space.$projectVersionInfix.username")
                 }
                 password = if (System.getenv().containsKey("JB_SPACE_${projectVersionInfixUppercase}_PASSWORD")) {
                     System.getenv("JB_SPACE_${projectVersionInfixUppercase}_PASSWORD")
-                }
-                else {
+                } else {
                     localProperties.getProperty("jetbrains.space.$projectVersionInfix.password")
                 }
             }
@@ -539,8 +576,7 @@ publishing {
                 username = githubUsername
                 password = if (System.getenv().containsKey("GITHUB_${projectVersionInfixUppercase}_PASSWORD")) {
                     System.getenv("GITHUB_${projectVersionInfixUppercase}_PASSWORD")
-                }
-                else {
+                } else {
                     localProperties.getProperty("github.$projectVersionInfix.password")
                 }
             }
