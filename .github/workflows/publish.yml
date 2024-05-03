@@ -34,6 +34,9 @@ jobs:
           java-version: 17
           cache: 'gradle'
 
+      - name: 📥 Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
       - name: 👀 Read gradle.properties
         uses: BrycensRanch/read-properties-action@v1.0.3
         id: gradle-properties
@@ -41,7 +44,7 @@ jobs:
           file: gradle.properties
           all: true
 
-      - name: 'Properties gradle.properties are:'
+      - name: ' 🖨️ Print gradle.properties:'
         env:
           GRADLE_PROPERTIES: ${{ toJson(steps.gradle-properties.outputs) }}
         run: echo "$GRADLE_PROPERTIES"
@@ -69,7 +72,7 @@ jobs:
             ./scripts/quality-check.sh
           fi
 
-      - name: Publish to Github Packages
+      - name: 🚀 Publish to GitHub Packages
         env:
           GITHUB_RELEASE_USERNAME: ${{ github.actor }}
           GITHUB_RELEASE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}

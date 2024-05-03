@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo Publish to Github Packages
+echo Publish to GitHub Packages
 
 . scripts/export-gpg-key.sh
 

@@ -32,4 +32,3 @@ test-settings:
     languageVersion: 1.9
     serialization:
       format: json  # JSON or other format
-

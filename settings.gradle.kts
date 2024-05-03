@@ -15,6 +15,8 @@
  */
 @file:Suppress("UnstableApiUsage")
 
+import java.util.*
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -36,7 +38,7 @@ dependencyResolutionManagement {
         maven { url = uri("https://maven.pkg.jetbrains.space/aaziz93/p/aaziz-93/releases") }
         // Space Packages snapshots
         maven { url = uri("https://maven.pkg.jetbrains.space/aaziz93/p/aaziz-93/snapshots") }
-        // Github Packages
+        // GitHub Packages
         maven { url = uri("https://maven.pkg.github.com/aaziz993") }
     }
 }
@@ -46,3 +48,33 @@ plugins {
 }
 
 rootProject.name = providers.gradleProperty("project.name").get()
+
+val localProperties: Properties = File("local.properties").let { file ->
+    Properties().apply {
+        if (file.exists()) {
+            load(file.reader())
+        }
+    }
+}
+
+buildCache {
+    if (providers.gradleProperty("jetbrains.space.gradle.build.enable").get().toBoolean()) {
+        remote<HttpBuildCache> {
+            url = uri("${providers.gradleProperty("jetbrains.space.gradle.build.cache.url").get()}/${rootProject.name}")
+            // better make it a variable and set it to true only for CI builds
+            isPush = true
+            credentials {
+                username = if (System.getenv().containsKey("")) {
+                    System.getenv("JB_SPACE_GRADLE_BUILD_CACHE_USERNAME")
+                } else {
+                    localProperties.getProperty("jetbrains.space.gradle.build.cache.username")
+                }
+                password = if (System.getenv().containsKey("")) {
+                    System.getenv("JB_SPACE_GRADLE_BUILD_CACHE_PASSWORD")
+                } else {
+                    localProperties.getProperty("jetbrains.space.gradle.build.cache.password")
+                }
+            }
+        }
+    }
+}

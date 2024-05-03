@@ -7,16 +7,16 @@ chmod-gradlew: # Give permission to execute gradlew.
 format: # Format code with spotless.
 	chmod 777 -R scripts/ && ./scripts/format.sh
 
-format-check: # Check code format with spotless.
+format-check: # 🔬 Check code format with spotless.
 	chmod 777 -R scripts/ && ./scripts/format.sh
 
-test: # Run all tests.
+test: # 🩺 Run all tests.
 	chmod 777 -R scripts/ && ./scripts/test.sh
 
 cover-report: # Generate code coverage report.
 	chmod 777 -R scripts/ && ./scripts/test.sh
 
-quality-check: # Check code quality with sonar.
+quality-check: # 🔬 Check code quality with sonar.
 	chmod 777 -R scripts/ && ./scripts/quality-check.sh
 
 checkup: format test quality-check  # Code format, test and quality check.
@@ -27,16 +27,16 @@ gen-gpg-key: # Generate gpg key.
 clean-gpg-keys: # Clean all gpg keys.
 	chmod 777 -R scripts/ && ./scripts/clean-gpg-keys.sh
 
-publish-github-packages: checkup # Publish to Github Packages.
+publish-github-packages: checkup # 🚀 Publish to GitHub Packages.
 	chmod 777 -R scripts/ && ./scripts/publish-github-packages.sh
 
-publish-space-packages: checkup # Publish to Space Packages.
+publish-space-packages: checkup # 🚀 Publish to Space Packages.
 	chmod 777 -R scripts/ && ./scripts/publish-space-packages.sh
 
-publish-maven: checkup # Publish to Maven.
+publish-maven: checkup # 🚀 Publish to Maven.
 	chmod 777 -R scripts/ && ./scripts/publish-maven.sh
 
-publish: checkup # Publish to Space Packages, Github Packages and Maven.
+publish: checkup # 🚀 Publish to Space Packages, GitHub Packages and Maven.
 	chmod 777 -R scripts/ && ./scripts/publish-github.sh && ./scripts/publish-space.sh && ./scripts/publish-maven.sh
 
 clean: # Clean all.
